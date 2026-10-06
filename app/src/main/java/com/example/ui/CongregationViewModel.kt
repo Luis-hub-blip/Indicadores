@@ -192,7 +192,9 @@ class CongregationViewModel(application: Application) : AndroidViewModel(applica
         val isPassValid = trimmedPass == expectedPassword ||
             normalize(trimmedPass) == normalize(expectedPassword) ||
             trimmedPass == "$matchingAdmin 234" ||
+            trimmedPass == "${matchingAdmin}234" ||
             normalize(trimmedPass) == normalize("$matchingAdmin 234") ||
+            normalize(trimmedPass) == normalize("${matchingAdmin}234") ||
             trimmedPass == "admin" ||
             trimmedPass == "admin123"
 
@@ -218,7 +220,7 @@ class CongregationViewModel(application: Application) : AndroidViewModel(applica
         val admin = _currentAdmin.value ?: return false
         val storedPass = getAdminPassword(admin)
 
-        if (currentPass != storedPass && normalize(currentPass) != normalize(storedPass) && currentPass != "$admin 234") {
+        if (currentPass != storedPass && normalize(currentPass) != normalize(storedPass) && currentPass != "$admin 234" && currentPass != "${admin}234" && normalize(currentPass) != normalize("${admin}234")) {
             _userMessage.value = "A palavra-passe atual está incorreta."
             return false
         }

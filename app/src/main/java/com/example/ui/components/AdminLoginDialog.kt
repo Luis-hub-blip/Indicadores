@@ -56,7 +56,7 @@ fun AdminLoginDialog(
     onDismiss: () -> Unit,
     onLogin: (adminName: String, password: String) -> Boolean
 ) {
-    var selectedAdmin by remember { mutableStateOf(CongregationConstants.ADMIN_USERS.first()) }
+    var username by remember { mutableStateOf(CongregationConstants.ADMIN_USERS.first()) }
     var adminDropdownExpanded by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -104,17 +104,17 @@ fun AdminLoginDialog(
                 )
 
                 Text(
-                    text = "Selecione o seu nome de administrador e digite a sua palavra-passe para ter acesso ao painel.",
+                    text = "Inicie a sessão com o seu nome de utilizador e a palavra-passe para aceder ao painel.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.padding(top = 6.dp, bottom = 16.dp)
                 )
 
-                // Select Administrator Dropdown
+                // Username Input (Text field with dropdown option)
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Administrador",
+                        text = "Nome de Utilizador",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -123,9 +123,12 @@ fun AdminLoginDialog(
                     )
                     Box {
                         OutlinedTextField(
-                            value = selectedAdmin,
-                            onValueChange = {},
-                            readOnly = true,
+                            value = username,
+                            onValueChange = {
+                                username = it
+                                errorMessage = null
+                            },
+                            placeholder = { Text("Ex: Lázaro Luis, Salú Gonsalves...") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Person,
@@ -134,26 +137,17 @@ fun AdminLoginDialog(
                                 )
                             },
                             trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "Selecionar administrador"
-                                )
+                                IconButton(onClick = { adminDropdownExpanded = !adminDropdownExpanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Selecionar da lista"
+                                    )
+                                }
                             },
+                            singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .testTag("select_admin_dropdown"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                disabledBorderColor = MaterialTheme.colorScheme.outline
-                            ),
-                            enabled = false
-                        )
-
-                        // Click overlay
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { adminDropdownExpanded = true }
+                                .testTag("admin_username_input")
                         )
 
                         DropdownMenu(
@@ -166,15 +160,46 @@ fun AdminLoginDialog(
                                     text = {
                                         Text(
                                             text = adminName,
-                                            fontWeight = if (adminName == selectedAdmin) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (adminName == selectedAdmin) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                            fontWeight = if (adminName.equals(username, ignoreCase = true)) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (adminName.equals(username, ignoreCase = true)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     onClick = {
-                                        selectedAdmin = adminName
+                                        username = adminName
                                         adminDropdownExpanded = false
                                         errorMessage = null
                                     }
+                                )
+                            }
+                        }
+                    }
+
+                    // Quick Select Suggestion Chips
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        CongregationConstants.ADMIN_USERS.forEach { adminName ->
+                            val isSelected = adminName.equals(username, ignoreCase = true)
+                            val shortName = adminName.split(" ").first()
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                                modifier = Modifier
+                                    .clickable {
+                                        username = adminName
+                                        errorMessage = null
+                                    }
+                            ) {
+                                Text(
+                                    text = shortName,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                 )
                             }
                         }
@@ -191,7 +216,7 @@ fun AdminLoginDialog(
                         errorMessage = null
                     },
                     label = { Text("Palavra-passe") },
-                    placeholder = { Text("Ex: $selectedAdmin 234") },
+                    placeholder = { Text("Dica: [Nome] 234") },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Key,
@@ -215,7 +240,7 @@ fun AdminLoginDialog(
                         if (errorMessage != null) {
                             Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
                         } else {
-                            Text("Palavra-passe inicial: $selectedAdmin 234")
+                            Text("Dica: [Nome do administrador] 234")
                         }
                     },
                     modifier = Modifier
@@ -242,12 +267,14 @@ fun AdminLoginDialog(
 
                     Button(
                         onClick = {
-                            if (password.isBlank()) {
+                            if (username.isBlank()) {
+                                errorMessage = "Por favor, digite o nome de utilizador"
+                            } else if (password.isBlank()) {
                                 errorMessage = "Por favor, digite a palavra-passe"
                             } else {
-                                val success = onLogin(selectedAdmin, password)
+                                val success = onLogin(username.trim(), password)
                                 if (!success) {
-                                    errorMessage = "Palavra-passe incorreta para $selectedAdmin"
+                                    errorMessage = "Nome de utilizador ou palavra-passe incorreta"
                                 }
                             }
                         },

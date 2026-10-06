@@ -255,8 +255,11 @@ fun SignInScreen(
                             Box {
                                 OutlinedTextField(
                                     value = username,
-                                    onValueChange = {},
-                                    readOnly = true,
+                                    onValueChange = {
+                                        username = it
+                                        usernameError = null
+                                    },
+                                    placeholder = { Text("Ex: Lázaro Luis, Salú Gonsalves...") },
                                     leadingIcon = {
                                         Icon(
                                             imageVector = Icons.Default.Person,
@@ -265,25 +268,17 @@ fun SignInScreen(
                                         )
                                     },
                                     trailingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowDropDown,
-                                            contentDescription = "Selecionar utilizador"
-                                        )
+                                        IconButton(onClick = { adminDropdownExpanded = !adminDropdownExpanded }) {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowDropDown,
+                                                contentDescription = "Selecionar utilizador"
+                                            )
+                                        }
                                     },
+                                    singleLine = true,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .testTag("username_input_dropdown"),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                        disabledBorderColor = MaterialTheme.colorScheme.outline
-                                    ),
-                                    enabled = false
-                                )
-
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .clickable { adminDropdownExpanded = true }
+                                        .testTag("username_input_field")
                                 )
 
                                 DropdownMenu(
@@ -296,8 +291,8 @@ fun SignInScreen(
                                             text = {
                                                 Text(
                                                     text = adminName,
-                                                    fontWeight = if (adminName == username) FontWeight.Bold else FontWeight.Normal,
-                                                    color = if (adminName == username) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                                    fontWeight = if (adminName.equals(username, ignoreCase = true)) FontWeight.Bold else FontWeight.Normal,
+                                                    color = if (adminName.equals(username, ignoreCase = true)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                                 )
                                             },
                                             onClick = {
@@ -305,6 +300,37 @@ fun SignInScreen(
                                                 adminDropdownExpanded = false
                                                 usernameError = null
                                             }
+                                        )
+                                    }
+                                }
+                            }
+
+                            // Quick chips for selecting administrators
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                CongregationConstants.ADMIN_USERS.forEach { adminName ->
+                                    val isSelected = adminName.equals(username, ignoreCase = true)
+                                    val shortName = adminName.split(" ").first()
+                                    Surface(
+                                        shape = RoundedCornerShape(16.dp),
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                                        modifier = Modifier
+                                            .clickable {
+                                                username = adminName
+                                                usernameError = null
+                                            }
+                                    ) {
+                                        Text(
+                                            text = shortName,
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                            ),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                         )
                                     }
                                 }
