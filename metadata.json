@@ -1,0 +1,6 @@
+{
+  "name": "Controle de Congregações",
+  "description": "Sistema de gestão e controle de pessoal de congregações com área pública e administração protegida",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

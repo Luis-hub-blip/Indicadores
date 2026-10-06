@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Pessoal de Congregações</title>
+  
+  <!-- PWA Manifest & Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1E3A8A">
+  <meta name="description" content="Gestão e controle de congregações com área pública e administração protegida">
+  
+  <!-- iOS Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Congregações">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-dark: #0F2A4A;
+      --whatsapp: #25D366;
+      --whatsapp-dark: #128C7E;
+      --danger: #DC2626;
+      --surface: #FFFFFF;
+      --bg: #F8FAFC;
+      --text: #0F172A;
+      --text-muted: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    .btn-admin {
+      background: var(--whatsapp-dark);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .privacy-banner {
+      background: #E0E7FF;
+      color: var(--primary-dark);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary);
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      background: #E2E8F0;
+      color: #334155;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      border: none;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .card {
+      background: white;
+      padding: 16px;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      background: #E0E7FF;
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .badge-present {
+      background: #DCF8C6;
+      color: #065F46;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .badge-absent {
+      background: #FEE2E2;
+      color: #991B1B;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="icon-192.png" alt="Logo">
+      <div>
+        <div class="brand-title">Controle de Congregações</div>
+        <div class="brand-subtitle">Consulta Pública & Presença</div>
+      </div>
+    </div>
+    <button class="btn-admin" onclick="alert('Aceda ao painel de administrador na aplicação Android ou efetue o login!')">
+      Área Administrativa
+    </button>
+  </header>
+
+  <main>
+    <div class="privacy-banner">
+      🔒 <strong>Área Pública:</strong> Consulta rápida restrita. Contactos e designações são protegidos por privacidade.
+    </div>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="Pesquisar por nome ou congregação..." onkeyup="filterList()">
+
+    <div class="filters-row">
+      <button class="chip active" onclick="setCongregation('')">Todas as Congregações</button>
+      <button class="chip" onclick="setCongregation('Novo Golfe 01')">Novo Golfe 01</button>
+      <button class="chip" onclick="setCongregation('Novo Golfe 02')">Novo Golfe 02</button>
+      <button class="chip" onclick="setCongregation('Novo Golfe 03')">Novo Golfe 03</button>
+      <button class="chip" onclick="setCongregation('Golfe Quintalão 2')">Golfe Quintalão 2</button>
+      <button class="chip" onclick="setCongregation('Golfe Quintalão 11')">Golfe Quintalão 11</button>
+    </div>
+
+    <div id="membersContainer">
+      <div class="card" data-name="Manuel António da Costa" data-cong="Novo Golfe 01">
+        <div class="card-info">
+          <div class="avatar">MC</div>
+          <div>
+            <strong>Manuel António da Costa</strong>
+            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
+          </div>
+        </div>
+        <span class="badge-present">✓ Presente</span>
+      </div>
+
+      <div class="card" data-name="Sebastião Domingos Afonso" data-cong="Novo Golfe 01">
+        <div class="card-info">
+          <div class="avatar">SA</div>
+          <div>
+            <strong>Sebastião Domingos Afonso</strong>
+            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
+          </div>
+        </div>
+        <span class="badge-present">✓ Presente</span>
+      </div>
+
+      <div class="card" data-name="Esperança Maria Panzo" data-cong="Novo Golfe 01">
+        <div class="card-info">
+          <div class="avatar">EP</div>
+          <div>
+            <strong>Esperança Maria Panzo</strong>
+            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
+          </div>
+        </div>
+        <span class="badge-absent">✗ Ausente</span>
+      </div>
+
+      <div class="card" data-name="Gabriel Nzuzi Muanda" data-cong="Golfe Quintalão 2">
+        <div class="card-info">
+          <div class="avatar">GM</div>
+          <div>
+            <strong>Gabriel Nzuzi Muanda</strong>
+            <div style="font-size:0.85rem; color:#64748B;">Golfe Quintalão 2</div>
+          </div>
+        </div>
+        <span class="badge-present">✓ Presente</span>
+      </div>
+
+      <div class="card" data-name="Simão Luamba Candido" data-cong="Golfe Quintalão 11">
+        <div class="card-info">
+          <div class="avatar">SC</div>
+          <div>
+            <strong>Simão Luamba Candido</strong>
+            <div style="font-size:0.85rem; color:#64748B;">Golfe Quintalão 11</div>
+          </div>
+        </div>
+        <span class="badge-absent">✗ Ausente</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Registo do Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((reg) => console.log('Service Worker registrado:', reg.scope))
+          .catch((err) => console.error('Erro no registro do Service Worker:', err));
+      });
+    }
+
+    let currentCong = '';
+
+    function setCongregation(cong) {
+      currentCong = cong;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      filterList();
+    }
+
+    function filterList() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('#membersContainer .card').forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const cong = card.getAttribute('data-cong');
+        const matchesQuery = name.includes(q) || cong.toLowerCase().includes(q);
+        const matchesCong = !currentCong || cong === currentCong;
+        card.style.display = matchesQuery && matchesCong ? 'flex' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

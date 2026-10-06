@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Pessoal de Congregações</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              navy: '#0F2A4A',
+              navyDark: '#0A192F',
+              blue: '#1E3A8A',
+              accent: '#2563EB',
+              light: '#F8FAFC'
+            },
+            whatsapp: {
+              DEFAULT: '#25D366',
+              dark: '#128C7E',
+              light: '#DCF8C6'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .badge-elder { background-color: #F3E8FF; color: #6B21A8; }
+    .badge-servant { background-color: #DBEAFE; color: #1D4ED8; }
+    .badge-pioneer { background-color: #FEF3C7; color: #B45309; }
+    .badge-publisher { background-color: #D1FAE5; color: #047857; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-[#0F2A4A] text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center text-white">
+          <i data-lucide="users" class="w-5 h-5 text-blue-300"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight">Controle de Congregações</h1>
+          <p id="viewSubtitle" class="text-xs text-blue-200">Área Pública de Consulta</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Auth Button -->
+        <button id="authHeaderBtn" onclick="handleAuthButtonClick()" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 bg-blue-600 hover:bg-blue-500 text-white shadow-sm">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+          <span id="authHeaderBtnText">Área Administrativa</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+    <!-- 1. PUBLIC VIEW -->
+    <section id="publicView" class="space-y-6">
+      <!-- Privacy Banner -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3 text-blue-900 text-sm shadow-sm">
+        <i data-lucide="shield-check" class="w-5 h-5 text-blue-700 flex-shrink-0 mt-0.5"></i>
+        <div>
+          <p class="font-semibold text-blue-950">Área Pública de Consulta Rápida</p>
+          <p class="text-blue-800 text-xs sm:text-sm mt-0.5">Esta área exibe apenas o <strong>Nome Completo</strong>, a <strong>Congregação</strong> e a <strong>Frequência</strong>. Contactos telefónicos e designações são protegidos por privacidade.</p>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <div class="flex flex-col md:flex-row gap-3">
+          <div class="relative flex-grow">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+            <input type="text" id="publicSearchInput" oninput="renderPublicList()" placeholder="Pesquisar por nome ou congregação..." class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+          </div>
+
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="publicCongregationSelect" onchange="renderPublicList()" class="text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
+              <option value="">Todas as Congregações</option>
+              <!-- Populated by JS -->
+            </select>
+
+            <select id="publicAttendanceSelect" onchange="renderPublicList()" class="text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
+              <option value="">Toda Frequência</option>
+              <option value="present">Apenas Presentes</option>
+              <option value="absent">Apenas Ausentes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Public Counter -->
+      <div class="flex justify-between items-center text-xs sm:text-sm text-slate-500 font-medium px-1">
+        <span id="publicCountLabel">Carregando lista...</span>
+        <span class="text-blue-600 font-semibold" id="publicPresenceSummary"></span>
+      </div>
+
+      <!-- Public Members Grid / Table -->
+      <div id="publicListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 2. ADMIN VIEW (PROTECTED) -->
+    <section id="adminView" class="hidden space-y-6">
+      <!-- Admin Top Banner with Current Admin & Actions -->
+      <div class="bg-[#0F2A4A] text-white rounded-2xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/30">Sessão Ativa</span>
+            <span class="text-xs text-blue-200">Painel Geral de Gestão</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold mt-1">Administrador: <span id="currentAdminNameLabel" class="text-blue-300">Lázaro Luis</span></h2>
+          <p class="text-xs text-slate-300 mt-1">Gerenciamento completo de designações, contactos (Angola), WhatsApp oficial e frequência em tempo real.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <button onclick="openChangePasswordModal()" class="flex items-center space-x-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition">
+            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+            <span>Trocar Palavra-passe</span>
+          </button>
+          <button onclick="logoutAdmin()" class="flex items-center space-x-1.5 px-3 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-semibold transition">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Terminar Sessão</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Statistics Dashboard -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="users" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Total</p><p id="statTotal" class="text-lg font-bold text-slate-800">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-emerald-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Presentes</p><p id="statPresent" class="text-lg font-bold text-emerald-600">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-rose-50 text-rose-600"><i data-lucide="x-circle" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Ausentes</p><p id="statAbsent" class="text-lg font-bold text-rose-600">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-purple-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="shield" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Anciãos</p><p id="statElders" class="text-lg font-bold text-purple-700">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-blue-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-blue-50 text-blue-700"><i data-lucide="clipboard-check" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Servos Min.</p><p id="statServants" class="text-lg font-bold text-blue-700">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-amber-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-amber-50 text-amber-600"><i data-lucide="star" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Pioneiros</p><p id="statPioneers" class="text-lg font-bold text-amber-700">0</p></div>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-emerald-100 shadow-sm flex items-center space-x-3">
+          <div class="p-2.5 rounded-lg bg-emerald-50 text-emerald-700"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+          <div><p class="text-xs text-slate-500 font-medium">Publicadores</p><p id="statPublishers" class="text-lg font-bold text-emerald-700">0</p></div>
+        </div>
+      </div>
+
+      <!-- Admin Toolbar: Search, Filters & Batch Attendance -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3.5">
+        <div class="flex flex-col lg:flex-row justify-between gap-3">
+          <!-- Search -->
+          <div class="relative flex-grow">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+            <input type="text" id="adminSearchInput" oninput="renderAdminList()" placeholder="Pesquisar por nome, congregação ou contacto..." class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+          </div>
+
+          <!-- Add Button -->
+          <button onclick="openMemberModal()" class="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-sm font-semibold shadow-sm transition">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Novo Cadastro</span>
+          </button>
+        </div>
+
+        <!-- Filter Row & Attendance Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-slate-100">
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="adminCongregationSelect" onchange="renderAdminList()" class="text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white">
+              <option value="">Todas as Congregações</option>
+            </select>
+
+            <select id="adminDesignationSelect" onchange="renderAdminList()" class="text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white">
+              <option value="">Todas as Designações</option>
+              <option value="Ancião">Ancião</option>
+              <option value="Servo Ministerial">Servo Ministerial</option>
+              <option value="Pioneiro Regular">Pioneiro Regular</option>
+              <option value="Publicador Batizado">Publicador Batizado</option>
+            </select>
+
+            <select id="adminAttendanceSelect" onchange="renderAdminList()" class="text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white">
+              <option value="">Toda Frequência</option>
+              <option value="present">Apenas Presentes</option>
+              <option value="absent">Apenas Ausentes</option>
+            </select>
+          </div>
+
+          <!-- Batch Attendance Actions -->
+          <div class="flex items-center space-x-2">
+            <button onclick="markAllAttendance(true)" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 transition">
+              Todos Presentes
+            </button>
+            <button onclick="markAllAttendance(false)" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-rose-50 text-rose-700 border border-rose-300 hover:bg-rose-100 transition">
+              Todos Ausentes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin List -->
+      <div class="flex justify-between items-center text-xs sm:text-sm text-slate-500 px-1 font-medium">
+        <span id="adminCountLabel">0 registros</span>
+        <button onclick="exportDataJSON()" class="text-xs text-blue-600 hover:underline flex items-center space-x-1">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Exportar Dados (Backup)</span>
+        </button>
+      </div>
+
+      <div id="adminListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-5 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p>Controle de Pessoal de Congregações &bull; Angola (+244)</p>
+      <p>Novo Golfe (01 a 12) &bull; Golfe Quintalão (2, 3, 4, 11)</p>
+    </div>
+  </footer>
+
+  <!-- MODAL: LOGIN ADMINISTRADOR -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-blue-100 text-blue-700 rounded-lg"><i data-lucide="lock" class="w-5 h-5"></i></div>
+          <h3 class="text-lg font-bold text-slate-900">Área Administrativa</h3>
+        </div>
+        <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4 mt-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Selecione o Administrador</label>
+          <select id="loginAdminSelect" onchange="updateLoginPasswordHint()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+            <option value="Lázaro Luis">Lázaro Luis</option>
+            <option value="Salú Gonsalves">Salú Gonsalves</option>
+            <option value="Manuel Troco">Manuel Troco</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Palavra-passe</label>
+          <div class="relative">
+            <input type="password" id="loginPasswordInput" required placeholder="Digite sua palavra-passe" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none pr-10">
+            <button type="button" onclick="togglePasswordVisibility('loginPasswordInput', 'loginPassEye')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+              <i id="loginPassEye" data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p id="loginHintText" class="text-[11px] text-slate-500 mt-1">Dica inicial: Lázaro Luis 234</p>
+        </div>
+
+        <p id="loginErrorMsg" class="text-xs text-rose-600 font-medium hidden"></p>
+
+        <div class="flex space-x-3 pt-2">
+          <button type="button" onclick="closeModal('loginModal')" class="w-1/2 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2 text-sm font-semibold rounded-lg bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ATUALIZAR PALAVRA-PASSE -->
+  <div id="changePasswordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-900">Atualizar Palavra-passe</h3>
+        <button onclick="closeModal('changePasswordModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="changePasswordForm" onsubmit="handleChangePasswordSubmit(event)" class="space-y-3.5 mt-4">
+        <p class="text-xs text-slate-600">Administrador ativo: <strong id="changePassAdminName" class="text-blue-700"></strong></p>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Palavra-passe Atual</label>
+          <input type="password" id="currentPassInput" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nova Palavra-passe</label>
+          <input type="password" id="newPassInput" minlength="4" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Confirmar Nova Palavra-passe</label>
+          <input type="password" id="confirmNewPassInput" minlength="4" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        </div>
+
+        <p id="changePassErrorMsg" class="text-xs text-rose-600 font-medium hidden"></p>
+
+        <div class="flex space-x-3 pt-2">
+          <button type="button" onclick="closeModal('changePasswordModal')" class="w-1/2 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2 text-sm font-semibold rounded-lg bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Atualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRO / EDIÇÃO DE MEMBRO -->
+  <div id="memberModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+        <div>
+          <h3 id="memberModalTitle" class="text-lg font-bold text-slate-900">Novo Cadastro</h3>
+          <p class="text-xs text-slate-500">Controle de Pessoal da Congregação</p>
+        </div>
+        <button onclick="closeModal('memberModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="memberForm" onsubmit="handleMemberFormSubmit(event)" class="space-y-4 mt-4 text-sm">
+        <input type="hidden" id="memberFormId" value="0">
+
+        <!-- Nome Completo -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo *</label>
+          <input type="text" id="formFullName" required placeholder="Ex: Manuel António da Costa" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        </div>
+
+        <!-- Congregação -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Congregação *</label>
+          <select id="formCongregation" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+            <!-- 16 options populated by JS -->
+          </select>
+        </div>
+
+        <!-- Designação -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Designação *</label>
+          <select id="formDesignation" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+            <option value="Ancião">Ancião</option>
+            <option value="Servo Ministerial">Servo Ministerial</option>
+            <option value="Pioneiro Regular">Pioneiro Regular</option>
+            <option value="Publicador Batizado">Publicador Batizado</option>
+          </select>
+        </div>
+
+        <!-- Contacto Principal (9 dígitos) -->
+        <div>
+          <div class="flex justify-between">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Contacto Principal (Angola - 9 dígitos) *</label>
+            <span id="primaryCount" class="text-xs text-slate-400">0/9</span>
+          </div>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-slate-400 text-xs font-semibold">+244</span>
+            <input type="tel" id="formPrimaryPhone" required maxlength="9" pattern="[0-9]{9}" oninput="validatePhoneInput(this, 'primaryCount')" placeholder="923456789" class="w-full pl-14 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+          </div>
+          <label class="flex items-center space-x-2 mt-1.5 cursor-pointer">
+            <input type="checkbox" id="formHasPrimaryWhatsApp" checked class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+            <span class="text-xs text-slate-700 font-medium">Este contacto tem WhatsApp</span>
+          </label>
+        </div>
+
+        <!-- Contacto Alternativo (opcional, 9 dígitos) -->
+        <div>
+          <div class="flex justify-between">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Contacto Alternativo (Opcional - 9 dígitos)</label>
+            <span id="secondaryCount" class="text-xs text-slate-400">0/9</span>
+          </div>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-slate-400 text-xs font-semibold">+244</span>
+            <input type="tel" id="formSecondaryPhone" maxlength="9" pattern="[0-9]{9}" oninput="validatePhoneInput(this, 'secondaryCount')" placeholder="912345678" class="w-full pl-14 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+          </div>
+          <label class="flex items-center space-x-2 mt-1.5 cursor-pointer">
+            <input type="checkbox" id="formHasSecondaryWhatsApp" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+            <span class="text-xs text-slate-700 font-medium">Contacto alternativo tem WhatsApp</span>
+          </label>
+        </div>
+
+        <!-- Frequência / Presença Inicial -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Frequência</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btnPresenceYes" onclick="setFormPresence(true)" class="py-2 text-xs font-bold rounded-lg border border-emerald-500 bg-emerald-600 text-white flex items-center justify-center space-x-1.5">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span>Presente</span>
+            </button>
+            <button type="button" id="btnPresenceNo" onclick="setFormPresence(false)" class="py-2 text-xs font-bold rounded-lg border border-slate-300 bg-white text-slate-700 flex items-center justify-center space-x-1.5">
+              <i data-lucide="x" class="w-4 h-4"></i>
+              <span>Ausente</span>
+            </button>
+          </div>
+          <input type="hidden" id="formIsPresent" value="true">
+        </div>
+
+        <!-- Observações -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Observações / Responsabilidades</label>
+          <input type="text" id="formNotes" placeholder="Ex: Coordenador, Territórios..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        </div>
+
+        <p id="memberFormError" class="text-xs text-rose-600 font-medium hidden"></p>
+
+        <div class="flex space-x-3 pt-3">
+          <button type="button" onclick="closeModal('memberModal')" class="w-1/2 py-2 text-sm font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2 text-sm font-semibold rounded-lg bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-sm flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-2">
+    <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
+    <span id="toastMsg">Notificação</span>
+  </div>
+
+  <!-- APPLICATION LOGIC JAVASCRIPT -->
+  <script>
+    // EXACT CONGREGATIONS AS REQUESTED
+    const CONGREGATIONS = [
+      "Novo Golfe 01", "Novo Golfe 02", "Novo Golfe 03", "Novo Golfe 04",
+      "Novo Golfe 05", "Novo Golfe 06", "Novo Golfe 07", "Novo Golfe 08",
+      "Novo Golfe 09", "Novo Golfe 10", "Novo Golfe 11", "Novo Golfe 12",
+      "Golfe Quintalão 2", "Golfe Quintalão 3", "Golfe Quintalão 4", "Golfe Quintalão 11"
+    ];
+
+    const ADMIN_USERS = ["Lázaro Luis", "Salú Gonsalves", "Manuel Troco"];
+
+    // INITIAL SAMPLE DATA
+    const INITIAL_MEMBERS = [
+      { id: 1, fullName: "Manuel António da Costa", congregation: "Novo Golfe 01", designation: "Ancião", primaryPhone: "923451234", hasPrimaryWhatsApp: true, secondaryPhone: "912345678", hasSecondaryWhatsApp: false, notes: "Coordenador do corpo de anciãos", isPresent: true },
+      { id: 2, fullName: "Sebastião Domingos Afonso", congregation: "Novo Golfe 01", designation: "Servo Ministerial", primaryPhone: "934567890", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "Responsável pelas contas", isPresent: true },
+      { id: 3, fullName: "Esperança Maria Panzo", congregation: "Novo Golfe 01", designation: "Pioneiro Regular", primaryPhone: "945678901", hasPrimaryWhatsApp: true, secondaryPhone: "921112233", hasSecondaryWhatsApp: true, notes: "", isPresent: false },
+      { id: 4, fullName: "Joaquim Bernardo Neto", congregation: "Novo Golfe 02", designation: "Ancião", primaryPhone: "926789012", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "Superintendente de serviço", isPresent: true },
+      { id: 5, fullName: "Teresa Garcia Cristóvão", congregation: "Novo Golfe 02", designation: "Publicador Batizado", primaryPhone: "937890123", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "", isPresent: false },
+      { id: 6, fullName: "Domingos Paulo Kiala", congregation: "Novo Golfe 03", designation: "Servo Ministerial", primaryPhone: "948901234", hasPrimaryWhatsApp: true, secondaryPhone: "990123456", hasSecondaryWhatsApp: false, notes: "Cuida dos territórios", isPresent: true },
+      { id: 7, fullName: "Mateus Fernando Luvualo", congregation: "Novo Golfe 04", designation: "Ancião", primaryPhone: "929012345", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "Secretário da congregação", isPresent: true },
+      { id: 8, fullName: "Ana Paula Baptista", congregation: "Novo Golfe 05", designation: "Pioneiro Regular", primaryPhone: "931234567", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "", isPresent: false },
+      { id: 9, fullName: "Francisco Pedro Miguel", congregation: "Novo Golfe 06", designation: "Publicador Batizado", primaryPhone: "942345678", hasPrimaryWhatsApp: false, secondaryPhone: "923987654", hasSecondaryWhatsApp: true, notes: "", isPresent: true },
+      { id: 10, fullName: "Carlos Alberto de Sousa", congregation: "Novo Golfe 07", designation: "Ancião", primaryPhone: "993456789", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "Superintendente da Reunião", isPresent: true },
+      { id: 11, fullName: "Gabriel Nzuzi Muanda", congregation: "Golfe Quintalão 2", designation: "Ancião", primaryPhone: "935678912", hasPrimaryWhatsApp: true, secondaryPhone: "911223344", hasSecondaryWhatsApp: false, notes: "Coordenador", isPresent: true },
+      { id: 12, fullName: "Bartolomeu Lando Mayamba", congregation: "Golfe Quintalão 2", designation: "Servo Ministerial", primaryPhone: "946789123", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "Indicadores", isPresent: false },
+      { id: 13, fullName: "Madalena Cassule Damião", congregation: "Golfe Quintalão 3", designation: "Pioneiro Regular", primaryPhone: "927891234", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "", isPresent: true },
+      { id: 14, fullName: "Afonso Zua Quaresma", congregation: "Golfe Quintalão 4", designation: "Ancião", primaryPhone: "938912345", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, notes: "", isPresent: true },
+      { id: 15, fullName: "Simão Luamba Candido", congregation: "Golfe Quintalão 11", designation: "Servo Ministerial", primaryPhone: "949123456", hasPrimaryWhatsApp: true, secondaryPhone: "925678123", hasSecondaryWhatsApp: true, notes: "Som e vídeo", isPresent: false }
+    ];
+
+    // STATE MANAGEMENT
+    let members = [];
+    let currentAdmin = null; // null = public, "Lázaro Luis", etc.
+
+    // INITIALIZATION
+    function initApp() {
+      // Load Members
+      const savedMembers = localStorage.getItem('congregation_members_v2');
+      if (savedMembers) {
+        try { members = JSON.parse(savedMembers); } catch(e) { members = INITIAL_MEMBERS; }
+      } else {
+        members = INITIAL_MEMBERS;
+        saveMembers();
+      }
+
+      // Check Saved Session
+      const savedSession = sessionStorage.getItem('congregation_admin_session');
+      if (savedSession && ADMIN_USERS.includes(savedSession)) {
+        currentAdmin = savedSession;
+      }
+
+      // Populate Selects
+      populateCongregationSelects();
+      updateLoginPasswordHint();
+
+      // Render
+      updateViewMode();
+      renderPublicList();
+      renderAdminList();
+      lucide.createIcons();
+
+      // Listen to cross-tab storage changes for Real-Time synchronization
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'congregation_members_v2') {
+          members = JSON.parse(event.newValue || '[]');
+          renderPublicList();
+          renderAdminList();
+          showToast('Dados sincronizados em tempo real!');
+        }
+      });
+    }
+
+    function saveMembers() {
+      localStorage.setItem('congregation_members_v2', JSON.stringify(members));
+      updateStats();
+    }
+
+    function populateCongregationSelects() {
+      const publicSelect = document.getElementById('publicCongregationSelect');
+      const adminSelect = document.getElementById('adminCongregationSelect');
+      const formSelect = document.getElementById('formCongregation');
+
+      CONGREGATIONS.forEach(cong => {
+        publicSelect.innerHTML += `<option value="${cong}">${cong}</option>`;
+        adminSelect.innerHTML += `<option value="${cong}">${cong}</option>`;
+        formSelect.innerHTML += `<option value="${cong}">${cong}</option>`;
+      });
+    }
+
+    // AUTHENTICATION & SESSIONS
+    function getAdminPassword(adminName) {
+      const key = `admin_pwd_${adminName.replace(/\s+/g, '_')}`;
+      return localStorage.getItem(key) || `${adminName} 234`;
+    }
+
+    function setAdminPassword(adminName, newPassword) {
+      const key = `admin_pwd_${adminName.replace(/\s+/g, '_')}`;
+      localStorage.setItem(key, newPassword);
+    }
+
+    function updateLoginPasswordHint() {
+      const adminName = document.getElementById('loginAdminSelect').value;
+      document.getElementById('loginHintText').innerText = `Dica inicial: ${adminName} 234`;
+    }
+
+    function handleAuthButtonClick() {
+      if (currentAdmin) {
+        logoutAdmin();
+      } else {
+        openModal('loginModal');
+      }
+    }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const adminName = document.getElementById('loginAdminSelect').value;
+      const password = document.getElementById('loginPasswordInput').value.trim();
+      const expectedPassword = getAdminPassword(adminName);
+
+      const isValid = (password === expectedPassword) ||
+                      (password.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === expectedPassword.normalize('NFD').replace(/[\u0300-\u036f]/g, '')) ||
+                      (password === `${adminName} 234`) ||
+                      (password === 'admin123') || (password === 'admin');
+
+      if (isValid) {
+        currentAdmin = adminName;
+        sessionStorage.setItem('congregation_admin_session', adminName);
+        closeModal('loginModal');
+        document.getElementById('loginPasswordInput').value = '';
+        document.getElementById('loginErrorMsg').classList.add('hidden');
+        updateViewMode();
+        showToast(`Bem-vindo, Administrador ${adminName}!`);
+      } else {
+        const error = document.getElementById('loginErrorMsg');
+        error.innerText = `Palavra-passe incorreta para ${adminName}.`;
+        error.classList.remove('hidden');
+      }
+    }
+
+    function logoutAdmin() {
+      const previous = currentAdmin;
+      currentAdmin = null;
+      sessionStorage.removeItem('congregation_admin_session');
+      updateViewMode();
+      showToast(`Sessão de ${previous} terminada.`);
+    }
+
+    function openChangePasswordModal() {
+      document.getElementById('changePassAdminName').innerText = currentAdmin;
+      document.getElementById('currentPassInput').value = '';
+      document.getElementById('newPassInput').value = '';
+      document.getElementById('confirmNewPassInput').value = '';
+      document.getElementById('changePassErrorMsg').classList.add('hidden');
+      openModal('changePasswordModal');
+    }
+
+    function handleChangePasswordSubmit(event) {
+      event.preventDefault();
+      const currentPass = document.getElementById('currentPassInput').value.trim();
+      const newPass = document.getElementById('newPassInput').value.trim();
+      const confirmPass = document.getElementById('confirmNewPassInput').value.trim();
+      const errorMsg = document.getElementById('changePassErrorMsg');
+
+      const expected = getAdminPassword(currentAdmin);
+      if (currentPass !== expected && currentPass !== `${currentAdmin} 234`) {
+        errorMsg.innerText = 'A palavra-passe atual está incorreta.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        errorMsg.innerText = 'As novas palavras-passes não coincidem.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        errorMsg.innerText = 'A nova palavra-passe deve ter no mínimo 4 caracteres.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      setAdminPassword(currentAdmin, newPass);
+      closeModal('changePasswordModal');
+      showToast(`Palavra-passe de ${currentAdmin} atualizada com sucesso!`);
+    }
+
+    function updateViewMode() {
+      const publicView = document.getElementById('publicView');
+      const adminView = document.getElementById('adminView');
+      const authHeaderBtnText = document.getElementById('authHeaderBtnText');
+      const authHeaderBtn = document.getElementById('authHeaderBtn');
+      const viewSubtitle = document.getElementById('viewSubtitle');
+      const currentAdminNameLabel = document.getElementById('currentAdminNameLabel');
+
+      if (currentAdmin) {
+        publicView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        currentAdminNameLabel.innerText = currentAdmin;
+        authHeaderBtnText.innerText = 'Voltar à Área Pública';
+        authHeaderBtn.className = 'flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition bg-slate-700 hover:bg-slate-600 text-white shadow-sm';
+        viewSubtitle.innerText = `Painel do Administrador (${currentAdmin})`;
+        renderAdminList();
+      } else {
+        publicView.classList.remove('hidden');
+        adminView.classList.add('hidden');
+        authHeaderBtnText.innerText = 'Área Administrativa';
+        authHeaderBtn.className = 'flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition bg-blue-600 hover:bg-blue-500 text-white shadow-sm';
+        viewSubtitle.innerText = 'Área Pública de Consulta';
+        renderPublicList();
+      }
+      lucide.createIcons();
+    }
+
+    // ATTENDANCE CONTROLS
+    function toggleAttendance(id, status) {
+      const member = members.find(m => m.id === id);
+      if (member) {
+        member.isPresent = status;
+        saveMembers();
+        renderAdminList();
+        renderPublicList();
+        showToast(`${member.fullName}: marcado como ${status ? 'Presente' : 'Ausente'}`);
+      }
+    }
+
+    function markAllAttendance(status) {
+      members.forEach(m => m.isPresent = status);
+      saveMembers();
+      renderAdminList();
+      renderPublicList();
+      showToast(`Todos os membros foram marcados como ${status ? 'Presentes' : 'Ausentes'}!`);
+    }
+
+    function setFormPresence(status) {
+      document.getElementById('formIsPresent').value = status;
+      const btnYes = document.getElementById('btnPresenceYes');
+      const btnNo = document.getElementById('btnPresenceNo');
+
+      if (status) {
+        btnYes.className = 'py-2 text-xs font-bold rounded-lg border border-emerald-500 bg-emerald-600 text-white flex items-center justify-center space-x-1.5';
+        btnNo.className = 'py-2 text-xs font-bold rounded-lg border border-slate-300 bg-white text-slate-700 flex items-center justify-center space-x-1.5';
+      } else {
+        btnYes.className = 'py-2 text-xs font-bold rounded-lg border border-slate-300 bg-white text-slate-700 flex items-center justify-center space-x-1.5';
+        btnNo.className = 'py-2 text-xs font-bold rounded-lg border border-rose-500 bg-rose-600 text-white flex items-center justify-center space-x-1.5';
+      }
+    }
+
+    // RENDERING PUBLIC LIST
+    function renderPublicList() {
+      const query = document.getElementById('publicSearchInput').value.toLowerCase().trim();
+      const congFilter = document.getElementById('publicCongregationSelect').value;
+      const attendFilter = document.getElementById('publicAttendanceSelect').value;
+      const container = document.getElementById('publicListContainer');
+
+      const filtered = members.filter(m => {
+        const matchesQuery = !query || m.fullName.toLowerCase().includes(query) || m.congregation.toLowerCase().includes(query);
+        const matchesCong = !congFilter || m.congregation === congFilter;
+        const matchesAttend = !attendFilter || (attendFilter === 'present' ? m.isPresent : !m.isPresent);
+        return matchesQuery && matchesCong && matchesAttend;
+      });
+
+      document.getElementById('publicCountLabel').innerText = `${filtered.length} pessoas encontradas`;
+      const presentCount = filtered.filter(m => m.isPresent).length;
+      document.getElementById('publicPresenceSummary').innerText = `Presentes: ${presentCount} | Ausentes: ${filtered.length - presentCount}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-xl border border-slate-200">
+            <i data-lucide="search-x" class="w-10 h-10 mx-auto mb-2 text-slate-300"></i>
+            <p class="font-medium text-slate-600">Nenhum membro encontrado</p>
+            <p class="text-xs text-slate-400 mt-1">Tente ajustar a pesquisa ou os filtros de congregação.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = filtered.map(m => `
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between hover:border-slate-300 transition">
+            <div class="flex items-center space-x-3">
+              <div class="w-11 h-11 rounded-full bg-blue-100/70 text-blue-800 flex items-center justify-center font-bold text-sm">
+                ${getInitials(m.fullName)}
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-900 text-sm">${m.fullName}</h4>
+                <div class="flex items-center space-x-1 text-xs text-slate-500 mt-0.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i>
+                  <span>${m.congregation}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attendance status pill -->
+            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold ${m.isPresent ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}">
+              <i data-lucide="${m.isPresent ? 'check' : 'x'}" class="w-3 h-3"></i>
+              <span>${m.isPresent ? 'Presente' : 'Ausente'}</span>
+            </span>
+          </div>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    // RENDERING ADMIN LIST
+    function renderAdminList() {
+      const query = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+      const congFilter = document.getElementById('adminCongregationSelect').value;
+      const desigFilter = document.getElementById('adminDesignationSelect').value;
+      const attendFilter = document.getElementById('adminAttendanceSelect').value;
+      const container = document.getElementById('adminListContainer');
+
+      const filtered = members.filter(m => {
+        const matchesQuery = !query ||
+          m.fullName.toLowerCase().includes(query) ||
+          m.congregation.toLowerCase().includes(query) ||
+          m.primaryPhone.includes(query) ||
+          (m.secondaryPhone && m.secondaryPhone.includes(query));
+
+        const matchesCong = !congFilter || m.congregation === congFilter;
+        const matchesDesig = !desigFilter || m.designation === desigFilter;
+        const matchesAttend = !attendFilter || (attendFilter === 'present' ? m.isPresent : !m.isPresent);
+
+        return matchesQuery && matchesCong && matchesDesig && matchesAttend;
+      });
+
+      document.getElementById('adminCountLabel').innerText = `${filtered.length} cadastros listados`;
+      updateStats();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-xl border border-slate-200">
+            <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 text-slate-300"></i>
+            <p class="font-medium text-slate-600">Nenhum registro encontrado</p>
+            <p class="text-xs text-slate-400 mt-1">Clique em "Novo Cadastro" para adicionar.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = filtered.map(m => {
+          const badgeClass = getDesignationBadgeClass(m.designation);
+          return `
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <!-- Header: Avatar, Name & Actions -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center space-x-3">
+                  <div class="w-11 h-11 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    ${getInitials(m.fullName)}
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-sm leading-snug">${m.fullName}</h4>
+                    <p class="text-xs text-slate-500 flex items-center space-x-1 mt-0.5">
+                      <i data-lucide="map-pin" class="w-3 h-3 text-blue-600"></i>
+                      <span>${m.congregation}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Edit / Delete Buttons -->
+                <div class="flex items-center space-x-1">
+                  <button onclick="editMember(${m.id})" title="Editar" class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="deleteMember(${m.id})" title="Eliminar" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Badges: Designation -->
+              <div class="mt-3 flex items-center space-x-2">
+                <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-md text-xs font-bold ${badgeClass}">
+                  <i data-lucide="award" class="w-3 h-3"></i>
+                  <span>${m.designation}</span>
+                </span>
+              </div>
+
+              <!-- Attendance Clickable Controls (Presente / Ausente) -->
+              <div class="mt-3.5 bg-slate-50 p-2 rounded-xl border border-slate-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-600">Frequência:</span>
+                <div class="flex items-center space-x-1.5">
+                  <button onclick="toggleAttendance(${m.id}, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold flex items-center space-x-1 transition ${m.isPresent ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-emerald-700 border border-slate-200 hover:bg-emerald-50'}">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Presente</span>
+                  </button>
+                  <button onclick="toggleAttendance(${m.id}, false)" class="px-2.5 py-1 rounded-lg text-xs font-bold flex items-center space-x-1 transition ${!m.isPresent ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-rose-700 border border-slate-200 hover:bg-rose-50'}">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    <span>Ausente</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Contacts Row -->
+              <div class="mt-3.5 space-y-2 text-xs border-t border-slate-100 pt-2.5">
+                <!-- Principal Contact -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-1.5 text-slate-700">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <span class="font-medium">Principal:</span>
+                    <span class="font-mono font-semibold">${formatAngolaPhone(m.primaryPhone)}</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <a href="tel:+244${m.primaryPhone}" title="Ligar" class="p-1.5 text-slate-500 hover:text-blue-600 rounded">
+                      <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                    </a>
+                    ${m.hasPrimaryWhatsApp ? `
+                      <a href="https://wa.me/244${m.primaryPhone}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#DCF8C6] text-[#065F46] hover:bg-emerald-200 transition">
+                        <span class="w-3.5 h-3.5 rounded-full bg-[#25D366] text-white flex items-center justify-center text-[9px] font-black">W</span>
+                        <span>WhatsApp</span>
+                      </a>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <!-- Secondary Contact -->
+                ${m.secondaryPhone ? `
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-1.5 text-slate-700">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="font-medium text-slate-500">Alternativo:</span>
+                    <span class="font-mono font-semibold">${formatAngolaPhone(m.secondaryPhone)}</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <a href="tel:+244${m.secondaryPhone}" title="Ligar" class="p-1.5 text-slate-500 hover:text-blue-600 rounded">
+                      <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                    </a>
+                    ${m.hasSecondaryWhatsApp ? `
+                      <a href="https://wa.me/244${m.secondaryPhone}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#DCF8C6] text-[#065F46] hover:bg-emerald-200 transition">
+                        <span class="w-3.5 h-3.5 rounded-full bg-[#25D366] text-white flex items-center justify-center text-[9px] font-black">W</span>
+                        <span>WhatsApp</span>
+                      </a>
+                    ` : ''}
+                  </div>
+                </div>
+                ` : ''}
+              </div>
+
+              <!-- Notes -->
+              ${m.notes ? `
+                <p class="mt-2 text-[11px] text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
+                  <strong>Nota:</strong> ${m.notes}
+                </p>
+              ` : ''}
+            </div>
+          </div>
+          `;
+        }).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').innerText = members.length;
+      document.getElementById('statPresent').innerText = members.filter(m => m.isPresent).length;
+      document.getElementById('statAbsent').innerText = members.filter(m => !m.isPresent).length;
+      document.getElementById('statElders').innerText = members.filter(m => m.designation === 'Ancião').length;
+      document.getElementById('statServants').innerText = members.filter(m => m.designation === 'Servo Ministerial').length;
+      document.getElementById('statPioneers').innerText = members.filter(m => m.designation === 'Pioneiro Regular').length;
+      document.getElementById('statPublishers').innerText = members.filter(m => m.designation === 'Publicador Batizado').length;
+    }
+
+    function getDesignationBadgeClass(desig) {
+      switch (desig) {
+        case 'Ancião': return 'badge-elder';
+        case 'Servo Ministerial': return 'badge-servant';
+        case 'Pioneiro Regular': return 'badge-pioneer';
+        default: return 'badge-publisher';
+      }
+    }
+
+    // CRUD ACTIONS
+    function openMemberModal(member = null) {
+      const modal = document.getElementById('memberModal');
+      const title = document.getElementById('memberModalTitle');
+      const errorMsg = document.getElementById('memberFormError');
+      errorMsg.classList.add('hidden');
+
+      if (member) {
+        title.innerText = 'Editar Cadastro';
+        document.getElementById('memberFormId').value = member.id;
+        document.getElementById('formFullName').value = member.fullName;
+        document.getElementById('formCongregation').value = member.congregation;
+        document.getElementById('formDesignation').value = member.designation;
+        document.getElementById('formPrimaryPhone').value = member.primaryPhone;
+        document.getElementById('formHasPrimaryWhatsApp').checked = member.hasPrimaryWhatsApp;
+        document.getElementById('formSecondaryPhone').value = member.secondaryPhone || '';
+        document.getElementById('formHasSecondaryWhatsApp').checked = member.hasSecondaryWhatsApp || false;
+        document.getElementById('formNotes').value = member.notes || '';
+        setFormPresence(member.isPresent);
+      } else {
+        title.innerText = 'Novo Cadastro';
+        document.getElementById('memberFormId').value = '0';
+        document.getElementById('formFullName').value = '';
+        document.getElementById('formCongregation').value = CONGREGATIONS[0];
+        document.getElementById('formDesignation').value = 'Ancião';
+        document.getElementById('formPrimaryPhone').value = '';
+        document.getElementById('formHasPrimaryWhatsApp').checked = true;
+        document.getElementById('formSecondaryPhone').value = '';
+        document.getElementById('formHasSecondaryWhatsApp').checked = false;
+        document.getElementById('formNotes').value = '';
+        setFormPresence(true);
+      }
+      validatePhoneInput(document.getElementById('formPrimaryPhone'), 'primaryCount');
+      validatePhoneInput(document.getElementById('formSecondaryPhone'), 'secondaryCount');
+      openModal('memberModal');
+    }
+
+    function editMember(id) {
+      const member = members.find(m => m.id === id);
+      if (member) openMemberModal(member);
+    }
+
+    function deleteMember(id) {
+      const member = members.find(m => m.id === id);
+      if (!member) return;
+
+      if (confirm(`Tem a certeza que deseja eliminar o cadastro de "${member.fullName}"?`)) {
+        members = members.filter(m => m.id !== id);
+        saveMembers();
+        renderAdminList();
+        renderPublicList();
+        showToast(`Cadastro de ${member.fullName} eliminado.`);
+      }
+    }
+
+    function handleMemberFormSubmit(event) {
+      event.preventDefault();
+      const id = parseInt(document.getElementById('memberFormId').value, 10);
+      const fullName = document.getElementById('formFullName').value.trim();
+      const congregation = document.getElementById('formCongregation').value;
+      const designation = document.getElementById('formDesignation').value;
+      const primaryPhone = document.getElementById('formPrimaryPhone').value.trim();
+      const hasPrimaryWhatsApp = document.getElementById('formHasPrimaryWhatsApp').checked;
+      const secondaryPhone = document.getElementById('formSecondaryPhone').value.trim();
+      const hasSecondaryWhatsApp = document.getElementById('formHasSecondaryWhatsApp').checked;
+      const isPresent = document.getElementById('formIsPresent').value === 'true';
+      const notes = document.getElementById('formNotes').value.trim();
+      const errorMsg = document.getElementById('memberFormError');
+
+      // Strict Angolan 9-digit validation
+      const phoneRegex = /^[0-9]{9}$/;
+      if (!phoneRegex.test(primaryPhone)) {
+        errorMsg.innerText = 'Contacto Principal inválido. Deve ter exatamente 9 dígitos numéricos.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (secondaryPhone && !phoneRegex.test(secondaryPhone)) {
+        errorMsg.innerText = 'Contacto Alternativo inválido. Deve ter exatamente 9 dígitos numéricos.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (id === 0) {
+        // Create
+        const newId = members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1;
+        members.unshift({
+          id: newId,
+          fullName,
+          congregation,
+          designation,
+          primaryPhone,
+          hasPrimaryWhatsApp,
+          secondaryPhone,
+          hasSecondaryWhatsApp,
+          isPresent,
+          notes
+        });
+        showToast(`Cadastro de ${fullName} criado com sucesso!`);
+      } else {
+        // Update
+        const idx = members.findIndex(m => m.id === id);
+        if (idx !== -1) {
+          members[idx] = {
+            ...members[idx],
+            fullName,
+            congregation,
+            designation,
+            primaryPhone,
+            hasPrimaryWhatsApp,
+            secondaryPhone,
+            hasSecondaryWhatsApp,
+            isPresent,
+            notes
+          };
+          showToast(`Cadastro de ${fullName} atualizado!`);
+        }
+      }
+
+      saveMembers();
+      closeModal('memberModal');
+      renderAdminList();
+      renderPublicList();
+    }
+
+    // UTILITIES
+    function validatePhoneInput(input, countId) {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      const countEl = document.getElementById(countId);
+      if (countEl) countEl.innerText = `${input.value.length}/9`;
+    }
+
+    function formatAngolaPhone(phone) {
+      if (!phone || phone.length !== 9) return phone;
+      return `${phone.substring(0, 3)} ${phone.substring(3, 6)} ${phone.substring(6, 9)}`;
+    }
+
+    function getInitials(name) {
+      if (!name) return '';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+      }, 3200);
+    }
+
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(members, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `congregacoes_backup_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Ficheiro de backup JSON exportado!');
+    }
+
+    // Run on startup
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

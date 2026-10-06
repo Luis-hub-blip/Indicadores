@@ -1,0 +1,111 @@
+{
+  "entities": {
+    "Member": {
+      "title": "Member",
+      "description": "Dados do membro da congregação incluindo designação, contactos e presença",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID único do membro"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Nome completo do membro"
+        },
+        "congregation": {
+          "type": "string",
+          "description": "Nome da congregação pertencente"
+        },
+        "designation": {
+          "type": "string",
+          "description": "Designação oficial (Ancião, Servo Ministerial, Pioneiro Regular, Publicador Batizado)"
+        },
+        "primaryPhone": {
+          "type": "string",
+          "description": "Contacto principal de 9 dígitos de Angola"
+        },
+        "hasPrimaryWhatsApp": {
+          "type": "boolean",
+          "description": "Indicador se o contacto principal possui WhatsApp"
+        },
+        "secondaryPhone": {
+          "type": "string",
+          "description": "Contacto secundário opcional de 9 dígitos"
+        },
+        "hasSecondaryWhatsApp": {
+          "type": "boolean",
+          "description": "Indicador se o contacto secundário possui WhatsApp"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observações e atribuições adicionais"
+        },
+        "isPresent": {
+          "type": "boolean",
+          "description": "Estado de presença ou ausência"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID do usuário administrador que realizou a última alteração"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação gerenciado pelo servidor"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de atualização gerenciado pelo servidor"
+        }
+      },
+      "required": [
+        "id",
+        "fullName",
+        "congregation",
+        "designation",
+        "primaryPhone",
+        "hasPrimaryWhatsApp",
+        "isPresent",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminAccount": {
+      "title": "AdminAccount",
+      "description": "Credenciais e informações das contas administrativas",
+      "type": "object",
+      "properties": {
+        "adminName": {
+          "type": "string",
+          "description": "Nome do administrador (Lázaro Luis, Salú Gonsalves, Manuel Troco)"
+        },
+        "password": {
+          "type": "string",
+          "description": "Palavra-passe do administrador"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data da última alteração"
+        }
+      },
+      "required": [
+        "adminName",
+        "password",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/members/{memberId}": {
+      "schema": "Member",
+      "description": "Coleção de todos os membros das congregações cadastradas"
+    },
+    "/admin_accounts/{adminName}": {
+      "schema": "AdminAccount",
+      "description": "Coleção com credenciais administrativas persistidas"
+    }
+  }
+}

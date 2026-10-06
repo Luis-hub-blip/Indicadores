@@ -1,0 +1,71 @@
+{
+  "name": "Controle de Pessoal de Congregações",
+  "short_name": "Congregações",
+  "description": "Sistema de gestão e controle de pessoal de congregações com área pública, presença em tempo real e administração protegida",
+  "start_url": "./",
+  "scope": "./",
+  "id": "/congregacoes-app",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#0F2A4A",
+  "theme_color": "#1E3A8A",
+  "orientation": "any",
+  "dir": "ltr",
+  "lang": "pt-AO",
+  "categories": [
+    "productivity",
+    "utilities",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Área Pública",
+      "short_name": "Consulta",
+      "description": "Consulta rápida de membros e congregações",
+      "url": "./#public",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Área Administrativa",
+      "short_name": "Administração",
+      "description": "Painel de administração e presenças",
+      "url": "./#admin",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
