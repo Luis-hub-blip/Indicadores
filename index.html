@@ -447,7 +447,7 @@
         🔑 Alterar Palavra-passe
       </button>
       <button id="authBtn" class="btn btn-admin" onclick="toggleAuthModal()">
-        🔐 Iniciar Sessão Online
+        🔐 Área Administrativa
       </button>
     </div>
   </header>
@@ -1019,7 +1019,7 @@
         isAdminLoggedIn = false;
         currentAdminName = null;
         localStorage.removeItem('online_session_admin');
-        document.getElementById('authBtn').textContent = '🔐 Iniciar Sessão Online';
+        document.getElementById('authBtn').textContent = '🔐 Área Administrativa';
         document.getElementById('adminGreeting').style.display = 'none';
         document.getElementById('changePassBtn').style.display = 'none';
         document.getElementById('privacyBanner').style.display = 'flex';

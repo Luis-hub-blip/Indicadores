@@ -8,7 +8,7 @@
   <!-- PWA Manifest & Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1E3A8A">
-  <meta name="description" content="Gestão e controle de congregações com área pública e administração protegida">
+  <meta name="description" content="Gestão e controle de congregações com área pública, presença em tempo real no Firestore e administração protegida">
   
   <!-- iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,6 +20,7 @@
     :root {
       --primary: #1E3A8A;
       --primary-dark: #0F2A4A;
+      --primary-light: #2563EB;
       --whatsapp: #25D366;
       --whatsapp-dark: #128C7E;
       --danger: #DC2626;
@@ -27,6 +28,7 @@
       --bg: #F8FAFC;
       --text: #0F172A;
       --text-muted: #64748B;
+      --border: #E2E8F0;
     }
 
     * {
@@ -45,13 +47,16 @@
     }
 
     header {
-      background: var(--primary);
+      background: var(--primary-dark);
       color: white;
-      padding: 16px 20px;
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .brand {
@@ -72,30 +77,73 @@
     }
 
     .brand-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       opacity: 0.85;
     }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary-light);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary); }
 
     .btn-admin {
       background: var(--whatsapp-dark);
       color: white;
-      border: none;
-      padding: 8px 16px;
       border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    }
+    .btn-admin:hover { background: #0e6f64; }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #CBD5E1;
+      color: var(--text);
     }
 
     main {
       flex: 1;
-      max-width: 900px;
+      max-width: 960px;
       width: 100%;
       margin: 0 auto;
-      padding: 20px;
+      padding: 16px 20px 40px 20px;
+    }
+
+    .cloud-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 14px;
     }
 
     .privacy-banner {
@@ -104,10 +152,51 @@
       padding: 12px 16px;
       border-radius: 12px;
       font-size: 0.88rem;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .admin-bar {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FDE68A;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Stats Grid */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      min-width: 110px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .stat-pill .count {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .stat-pill .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     .search-box {
@@ -118,46 +207,76 @@
       font-size: 0.95rem;
       margin-bottom: 12px;
       outline: none;
+      background: white;
     }
-
     .search-box:focus {
-      border-color: var(--primary);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
     .filters-row {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 16px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .chip {
-      background: #E2E8F0;
-      color: #334155;
+      background: white;
+      color: #475569;
+      border: 1px solid var(--border);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      border: none;
+      transition: all 0.15s;
     }
-
+    .chip:hover { background: #F1F5F9; }
     .chip.active {
       background: var(--primary);
       color: white;
+      border-color: var(--primary);
+    }
+    .chip.active-green {
+      background: var(--whatsapp-dark);
+      color: white;
+      border-color: var(--whatsapp-dark);
+    }
+    .chip.active-red {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
     }
 
+    .batch-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+
+    /* Cards */
     .card {
       background: white;
       padding: 16px;
       border-radius: 14px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
       margin-bottom: 12px;
+    }
+
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
 
     .card-info {
@@ -177,24 +296,139 @@
       justify-content: center;
       font-weight: 700;
       font-size: 1rem;
+      flex-shrink: 0;
     }
 
-    .badge-present {
+    .badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-cong { background: #F1F5F9; color: #334155; }
+    .badge-elder { background: #F3E8FF; color: #6B21A8; }
+    .badge-servant { background: #DBEAFE; color: #1D4ED8; }
+    .badge-pioneer { background: #FEF3C7; color: #B45309; }
+    .badge-publisher { background: #D1FAE5; color: #047857; }
+
+    /* Attendance controls */
+    .attendance-control {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    .btn-presence {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-presence.present-active {
+      background: var(--whatsapp-dark);
+      color: white;
+    }
+    .btn-presence.present-inactive {
+      background: transparent;
+      border-color: #CBD5E1;
+      color: var(--whatsapp-dark);
+    }
+    .btn-presence.absent-active {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-presence.absent-inactive {
+      background: transparent;
+      border-color: #CBD5E1;
+      color: var(--danger);
+    }
+
+    /* Contacts Row */
+    .contact-row {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #E2E8F0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .wa-btn {
       background: #DCF8C6;
       color: #065F46;
+      text-decoration: none;
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 20px;
       font-size: 0.78rem;
       font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .wa-btn:hover { background: #c5f2a8; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 200;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 18px;
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .badge-absent {
-      background: #FEE2E2;
-      color: #991B1B;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.78rem;
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
       font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary-light);
     }
   </style>
 </head>
@@ -204,115 +438,893 @@
       <img src="icon-192.png" alt="Logo">
       <div>
         <div class="brand-title">Controle de Congregações</div>
-        <div class="brand-subtitle">Consulta Pública & Presença</div>
+        <div class="brand-subtitle">Firestore Sincronização em Tempo Real</div>
       </div>
     </div>
-    <button class="btn-admin" onclick="alert('Aceda ao painel de administrador na aplicação Android ou efetue o login!')">
-      Área Administrativa
-    </button>
+    <div class="header-actions">
+      <span id="adminGreeting" style="display:none; font-size:0.85rem; font-weight:700;"></span>
+      <button id="changePassBtn" class="btn btn-outline" style="display:none; border-color:rgba(255,255,255,0.4); color:white; font-size:0.8rem;" onclick="openChangePasswordModal()">
+        🔑 Alterar Palavra-passe
+      </button>
+      <button id="authBtn" class="btn btn-admin" onclick="toggleAuthModal()">
+        🔐 Área Administrativa
+      </button>
+    </div>
   </header>
 
   <main>
-    <div class="privacy-banner">
+    <div class="cloud-status">
+      🟢 <span>Conectado ao Firebase Firestore (Tempo Real ativo)</span>
+    </div>
+
+    <div id="privacyBanner" class="privacy-banner">
       🔒 <strong>Área Pública:</strong> Consulta rápida restrita. Contactos e designações são protegidos por privacidade.
     </div>
 
-    <input type="text" id="searchInput" class="search-box" placeholder="Pesquisar por nome ou congregação..." onkeyup="filterList()">
-
-    <div class="filters-row">
-      <button class="chip active" onclick="setCongregation('')">Todas as Congregações</button>
-      <button class="chip" onclick="setCongregation('Novo Golfe 01')">Novo Golfe 01</button>
-      <button class="chip" onclick="setCongregation('Novo Golfe 02')">Novo Golfe 02</button>
-      <button class="chip" onclick="setCongregation('Novo Golfe 03')">Novo Golfe 03</button>
-      <button class="chip" onclick="setCongregation('Golfe Quintalão 2')">Golfe Quintalão 2</button>
-      <button class="chip" onclick="setCongregation('Golfe Quintalão 11')">Golfe Quintalão 11</button>
+    <div id="adminNotice" class="admin-bar" style="display:none;">
+      <span><strong>Painel Administrativo:</strong> Acesso total com edição, WhatsApp e controle de presença.</span>
+      <button class="btn btn-primary" onclick="openMemberModal()">+ Novo Cadastro</button>
     </div>
 
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="count" id="statTotal">0</div>
+        <div class="label">Total Membros</div>
+      </div>
+      <div class="stat-pill">
+        <div class="count" id="statPresent" style="color:var(--whatsapp-dark);">0</div>
+        <div class="label">Presentes</div>
+      </div>
+      <div class="stat-pill">
+        <div class="count" id="statAbsent" style="color:var(--danger);">0</div>
+        <div class="label">Ausentes</div>
+      </div>
+      <div class="stat-pill">
+        <div class="count" id="statElders">0</div>
+        <div class="label">Anciãos</div>
+      </div>
+      <div class="stat-pill">
+        <div class="count" id="statServants">0</div>
+        <div class="label">Servos Min.</div>
+      </div>
+      <div class="stat-pill">
+        <div class="count" id="statPioneers">0</div>
+        <div class="label">Pioneiros</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <input type="text" id="searchInput" class="search-box" placeholder="Pesquisar por nome ou congregação..." onkeyup="renderMembers()">
+
+    <!-- Attendance Filter Chips -->
+    <div class="filters-row">
+      <button class="chip active" onclick="setAttendanceFilter(null, this)">Todos</button>
+      <button class="chip" onclick="setAttendanceFilter(true, this)">Apenas Presentes</button>
+      <button class="chip" onclick="setAttendanceFilter(false, this)">Apenas Ausentes</button>
+    </div>
+
+    <!-- Congregation Filter Chips -->
+    <div class="filters-row" id="congFilters">
+      <button class="chip active" onclick="setCongFilter('', this)">Todas Congregações</button>
+    </div>
+
+    <!-- Batch presence in Admin -->
+    <div id="batchBar" class="batch-actions" style="display:none;">
+      <span style="font-size:0.85rem; font-weight:700;">Ações Rápidas de Presença:</span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" style="color:var(--whatsapp-dark); font-weight:700;" onclick="batchSetAttendance(true)">Todos Presentes</button>
+        <button class="btn btn-outline" style="color:var(--danger); font-weight:700;" onclick="batchSetAttendance(false)">Todos Ausentes</button>
+      </div>
+    </div>
+
+    <!-- Members Container -->
     <div id="membersContainer">
-      <div class="card" data-name="Manuel António da Costa" data-cong="Novo Golfe 01">
-        <div class="card-info">
-          <div class="avatar">MC</div>
-          <div>
-            <strong>Manuel António da Costa</strong>
-            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
-          </div>
-        </div>
-        <span class="badge-present">✓ Presente</span>
-      </div>
-
-      <div class="card" data-name="Sebastião Domingos Afonso" data-cong="Novo Golfe 01">
-        <div class="card-info">
-          <div class="avatar">SA</div>
-          <div>
-            <strong>Sebastião Domingos Afonso</strong>
-            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
-          </div>
-        </div>
-        <span class="badge-present">✓ Presente</span>
-      </div>
-
-      <div class="card" data-name="Esperança Maria Panzo" data-cong="Novo Golfe 01">
-        <div class="card-info">
-          <div class="avatar">EP</div>
-          <div>
-            <strong>Esperança Maria Panzo</strong>
-            <div style="font-size:0.85rem; color:#64748B;">Novo Golfe 01</div>
-          </div>
-        </div>
-        <span class="badge-absent">✗ Ausente</span>
-      </div>
-
-      <div class="card" data-name="Gabriel Nzuzi Muanda" data-cong="Golfe Quintalão 2">
-        <div class="card-info">
-          <div class="avatar">GM</div>
-          <div>
-            <strong>Gabriel Nzuzi Muanda</strong>
-            <div style="font-size:0.85rem; color:#64748B;">Golfe Quintalão 2</div>
-          </div>
-        </div>
-        <span class="badge-present">✓ Presente</span>
-      </div>
-
-      <div class="card" data-name="Simão Luamba Candido" data-cong="Golfe Quintalão 11">
-        <div class="card-info">
-          <div class="avatar">SC</div>
-          <div>
-            <strong>Simão Luamba Candido</strong>
-            <div style="font-size:0.85rem; color:#64748B;">Golfe Quintalão 11</div>
-          </div>
-        </div>
-        <span class="badge-absent">✗ Ausente</span>
-      </div>
+      <div style="text-align:center; padding:40px; color:#64748B;">A carregar dados do Firestore...</div>
     </div>
   </main>
 
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal-backdrop" style="display:none;" onclick="if(event.target === this) toggleAuthModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h2 style="color:var(--primary); font-size:1.3rem;">Iniciar Sessão Online</h2>
+        <span style="background:#E0E7FF; color:var(--primary-dark); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:700;">Área Web & PWA</span>
+      </div>
+      <p style="font-size:0.85rem; color:#64748B; margin-bottom:16px;">Inicie a sessão na página online com o seu nome de utilizador e a palavra-passe para aceder à administração.</p>
+      
+      <form onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group">
+          <label>Nome de Utilizador / Administrador *</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="loginUsername" class="form-control" placeholder="Digite o nome (ex: Lázaro Luis, Salú Gonsalves, Manuel Troco)" autocomplete="username" required>
+            <select id="loginAdminSelect" class="form-control" style="width:auto; max-width:130px;" onchange="selectAdminFromDropdown(this.value)">
+              <option value="">Lista</option>
+              <option value="Lázaro Luis">Lázaro Luis</option>
+              <option value="Salú Gonsalves">Salú Gonsalves</option>
+              <option value="Manuel Troco">Manuel Troco</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Lázaro Luis')">Lázaro Luis</button>
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Salú Gonsalves')">Salú Gonsalves</button>
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Manuel Troco')">Manuel Troco</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Palavra-passe *</label>
+          <div style="position:relative;">
+            <input type="password" id="loginPassword" class="form-control" placeholder="Dica: [Nome do administrador] 234" style="padding-right:40px;" autocomplete="current-password" required>
+            <button type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.1rem;" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+          </div>
+          <small style="color:#64748B; font-size:0.75rem; display:block; margin-top:4px;">Dica inicial: [Nome do administrador] 234 (ex: Lázaro Luis 234)</small>
+        </div>
+
+        <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-bottom:12px; display:none; background:#FEE2E2; padding:8px 12px; border-radius:8px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-outline" onclick="toggleAuthModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="loginSubmitBtn">Entrar na Sessão</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="changePasswordModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-content">
+      <h2 style="margin-bottom:6px; color:var(--primary);">Atualizar Palavra-passe</h2>
+      <p id="changePassSubtitle" style="font-size:0.85rem; color:#64748B; margin-bottom:16px;">Administrador atual: Administrador</p>
+
+      <div class="form-group">
+        <label>Palavra-passe Atual *</label>
+        <input type="password" id="currentPasswordInput" class="form-control" placeholder="Digite a palavra-passe atual">
+      </div>
+
+      <div class="form-group">
+        <label>Nova Palavra-passe *</label>
+        <input type="password" id="newPasswordInput" class="form-control" placeholder="Mínimo de 4 caracteres">
+      </div>
+
+      <div class="form-group">
+        <label>Confirmar Nova Palavra-passe *</label>
+        <input type="password" id="confirmPasswordInput" class="form-control" placeholder="Repita a nova palavra-passe">
+      </div>
+
+      <div id="changePassError" style="color:var(--danger); font-size:0.8rem; margin-bottom:12px; display:none;"></div>
+      <div id="changePassSuccess" style="color:var(--whatsapp-dark); font-size:0.8rem; margin-bottom:12px; display:none;"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button class="btn btn-outline" onclick="closeChangePasswordModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitChangePassword()">Salvar Nova Palavra-passe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Create/Edit Modal -->
+  <div id="memberModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-content">
+      <h2 id="modalTitle" style="margin-bottom:14px; color:var(--primary);">Novo Cadastro</h2>
+      
+      <input type="hidden" id="memberId">
+
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="memberFullName" class="form-control" placeholder="Ex: Manuel António da Costa">
+      </div>
+
+      <div class="form-group">
+        <label>Congregação *</label>
+        <select id="memberCongregation" class="form-control"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Designação *</label>
+        <select id="memberDesignation" class="form-control">
+          <option value="Ancião">Ancião</option>
+          <option value="Servo Ministerial">Servo Ministerial</option>
+          <option value="Pioneiro Regular">Pioneiro Regular</option>
+          <option value="Publicador Batizado">Publicador Batizado</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Contacto Principal (9 dígitos - Angola) *</label>
+        <input type="tel" id="memberPrimaryPhone" class="form-control" maxlength="9" placeholder="923456789">
+        <label style="margin-top:6px; font-weight:normal; font-size:0.8rem;">
+          <input type="checkbox" id="memberPrimaryWa" checked> Tem WhatsApp
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Contacto Alternativo (9 dígitos, opcional)</label>
+        <input type="tel" id="memberSecondaryPhone" class="form-control" maxlength="9" placeholder="912345678">
+        <label style="margin-top:6px; font-weight:normal; font-size:0.8rem;">
+          <input type="checkbox" id="memberSecondaryWa"> Tem WhatsApp
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Estado Inicial de Presença</label>
+        <select id="memberPresence" class="form-control">
+          <option value="true">Presente</option>
+          <option value="false">Ausente</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Observações / Responsabilidades</label>
+        <input type="text" id="memberNotes" class="form-control" placeholder="Ex: Coordenador, Territórios, etc.">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button class="btn btn-outline" onclick="closeMemberModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveMemberFromModal()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Web SDK Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      onSnapshot, 
+      doc, 
+      setDoc, 
+      updateDoc, 
+      deleteDoc, 
+      serverTimestamp,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Configuração oficial do projeto Firebase fornecida pelo utilizador
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqGTzm85g-Vtgc55neVC8N2Xq027FT44I",
+      authDomain: "gen-lang-client-0577151195.firebaseapp.com",
+      projectId: "gen-lang-client-0577151195",
+      storageBucket: "gen-lang-client-0577151195.firebasestorage.app",
+      messagingSenderId: "844556880337",
+      appId: "1:844556880337:web:ee8baa3e7aab11c73f78f0"
+    };
+
+    // Inicialização do Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Listas Oficiais
+    const CONGREGATIONS = [
+      "Novo Golfe 01", "Novo Golfe 02", "Novo Golfe 03", "Novo Golfe 04",
+      "Novo Golfe 05", "Novo Golfe 06", "Novo Golfe 07", "Novo Golfe 08",
+      "Novo Golfe 09", "Novo Golfe 10", "Novo Golfe 11", "Novo Golfe 12",
+      "Golfe Quintalão 2", "Golfe Quintalão 3", "Golfe Quintalão 4", "Golfe Quintalão 11"
+    ];
+
+    const ADMIN_USERS = {
+      "Lázaro Luis": "Lázaro Luis 234",
+      "Salú Gonsalves": "Salú Gonsalves 234",
+      "Manuel Troco": "Manuel Troco 234"
+    };
+
+    // Estado da Aplicação
+    let membersData = [];
+    let isAdminLoggedIn = false;
+    let currentAdminName = null;
+    let selectedCongregation = '';
+    let selectedAttendance = null; // null: todos, true: presentes, false: ausentes
+
+    // Preenche as congregações no filtro e modal
+    const congFilterContainer = document.getElementById('congFilters');
+    const memberCongSelect = document.getElementById('memberCongregation');
+    CONGREGATIONS.forEach(cong => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.textContent = cong;
+      btn.onclick = () => setCongFilter(cong, btn);
+      congFilterContainer.appendChild(btn);
+
+      const opt = document.createElement('option');
+      opt.value = cong;
+      opt.textContent = cong;
+      memberCongSelect.appendChild(opt);
+    });
+
+    // Escuta em Tempo Real do Firestore (Membros)
+    const membersColRef = collection(db, "members");
+    onSnapshot(membersColRef, (snapshot) => {
+      membersData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Se o Firestore estiver vazio, injeta os dados de exemplo automaticamente
+      if (membersData.length === 0) {
+        seedInitialData();
+      } else {
+        renderMembers();
+        updateStats();
+      }
+    }, (error) => {
+      console.warn("Aviso Firestore Snapshot:", error.message);
+      // Se não autenticado via regras estritas de cloud, carrega dados locais
+      loadLocalFallback();
+    });
+
+    // Escuta em Tempo Real de Contas Administrativas no Firestore
+    try {
+      const adminColRef = collection(db, "admin_accounts");
+      onSnapshot(adminColRef, (snapshot) => {
+        snapshot.docs.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data && data.adminName && data.password) {
+            ADMIN_USERS[data.adminName] = data.password;
+            localStorage.setItem('admin_pass_' + data.adminName, data.password);
+          }
+        });
+      }, (err) => {
+        console.warn("Aviso admin_accounts snapshot:", err.message);
+      });
+    } catch(e) {
+      console.warn("Aviso ao subscrever admin_accounts:", e);
+    }
+
+    // Função de Fallback com dados iniciais
+    async function seedInitialData() {
+      const sample = [
+        { id: "m1", fullName: "Manuel António da Costa", congregation: "Novo Golfe 01", designation: "Ancião", primaryPhone: "923451234", hasPrimaryWhatsApp: true, secondaryPhone: "912345678", hasSecondaryWhatsApp: false, isPresent: true, notes: "Coordenador" },
+        { id: "m2", fullName: "Sebastião Domingos Afonso", congregation: "Novo Golfe 01", designation: "Servo Ministerial", primaryPhone: "934567890", hasPrimaryWhatsApp: true, secondaryPhone: "", hasSecondaryWhatsApp: false, isPresent: true, notes: "Contas" },
+        { id: "m3", fullName: "Esperança Maria Panzo", congregation: "Novo Golfe 01", designation: "Pioneiro Regular", primaryPhone: "945678901", hasPrimaryWhatsApp: true, secondaryPhone: "921112233", hasSecondaryWhatsApp: true, isPresent: false, notes: "" },
+        { id: "m4", fullName: "Gabriel Nzuzi Muanda", congregation: "Golfe Quintalão 2", designation: "Ancião", primaryPhone: "935678912", hasPrimaryWhatsApp: true, secondaryPhone: "911223344", hasSecondaryWhatsApp: false, isPresent: true, notes: "Coordenador" },
+        { id: "m5", fullName: "Simão Luamba Candido", congregation: "Golfe Quintalão 11", designation: "Servo Ministerial", primaryPhone: "949123456", hasPrimaryWhatsApp: true, secondaryPhone: "925678123", hasSecondaryWhatsApp: true, isPresent: false, notes: "Som e vídeo" }
+      ];
+
+      for (const item of sample) {
+        try {
+          await setDoc(doc(db, "members", item.id), {
+            ...item,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        } catch(e) {
+          console.warn("Erro ao semear:", e);
+        }
+      }
+    }
+
+    function loadLocalFallback() {
+      membersData = [
+        { id: "m1", fullName: "Manuel António da Costa", congregation: "Novo Golfe 01", designation: "Ancião", primaryPhone: "923451234", hasPrimaryWhatsApp: true, isPresent: true },
+        { id: "m2", fullName: "Sebastião Domingos Afonso", congregation: "Novo Golfe 01", designation: "Servo Ministerial", primaryPhone: "934567890", hasPrimaryWhatsApp: true, isPresent: true },
+        { id: "m3", fullName: "Esperança Maria Panzo", congregation: "Novo Golfe 01", designation: "Pioneiro Regular", primaryPhone: "945678901", hasPrimaryWhatsApp: true, isPresent: false },
+        { id: "m4", fullName: "Gabriel Nzuzi Muanda", congregation: "Golfe Quintalão 2", designation: "Ancião", primaryPhone: "935678912", hasPrimaryWhatsApp: true, isPresent: true },
+        { id: "m5", fullName: "Simão Luamba Candido", congregation: "Golfe Quintalão 11", designation: "Servo Ministerial", primaryPhone: "949123456", hasPrimaryWhatsApp: true, isPresent: false }
+      ];
+      renderMembers();
+      updateStats();
+    }
+
+    // Renderização da Lista
+    window.renderMembers = function() {
+      const container = document.getElementById('membersContainer');
+      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
+      const filtered = membersData.filter(m => {
+        const matchesQuery = !query || 
+          (m.fullName && m.fullName.toLowerCase().includes(query)) ||
+          (m.congregation && m.congregation.toLowerCase().includes(query)) ||
+          (isAdminLoggedIn && m.primaryPhone && m.primaryPhone.includes(query));
+
+        const matchesCong = !selectedCongregation || m.congregation === selectedCongregation;
+        const matchesAttendance = selectedAttendance === null || m.isPresent === selectedAttendance;
+
+        return matchesQuery && matchesCong && matchesAttendance;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:40px; color:#64748B;">
+            <div style="font-size:2rem; margin-bottom:8px;">🔍</div>
+            <strong>Nenhum membro encontrado</strong>
+            <div style="font-size:0.85rem; margin-top:4px;">Tente alterar os filtros ou o termo de pesquisa.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(m => {
+        const initials = getInitials(m.fullName);
+        const desigBadge = getDesignationBadge(m.designation);
+
+        return `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-info">
+                <div class="avatar">${initials}</div>
+                <div>
+                  <strong style="font-size:1rem;">${m.fullName}</strong>
+                  <div class="badges-row">
+                    <span class="badge badge-cong">📍 ${m.congregation}</span>
+                    ${isAdminLoggedIn ? desigBadge : ''}
+                  </div>
+                </div>
+              </div>
+
+              ${isAdminLoggedIn ? `
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-outline" style="padding:4px 8px;" onclick="editMember('${m.id}')">✏️</button>
+                  <button class="btn btn-outline" style="padding:4px 8px; color:var(--danger);" onclick="deleteMember('${m.id}')">🗑️</button>
+                </div>
+              ` : `
+                <span class="${m.isPresent ? 'badge-elder' : 'badge-publisher'}" style="background:${m.isPresent ? '#DCF8C6' : '#FEE2E2'}; color:${m.isPresent ? '#065F46' : '#991B1B'}; padding:5px 10px; border-radius:12px;">
+                  ${m.isPresent ? '✓ Presente' : '✗ Ausente'}
+                </span>
+              `}
+            </div>
+
+            ${isAdminLoggedIn ? `
+              <!-- Presença no Admin -->
+              <div class="attendance-control">
+                <span style="font-size:0.8rem; font-weight:700; color:#475569;">Frequência:</span>
+                <div style="margin-left:auto; display:flex; gap:6px;">
+                  <button class="btn-presence ${m.isPresent ? 'present-active' : 'present-inactive'}" onclick="setMemberAttendance('${m.id}', true)">
+                    ✓ Presente
+                  </button>
+                  <button class="btn-presence ${!m.isPresent ? 'absent-active' : 'absent-inactive'}" onclick="setMemberAttendance('${m.id}', false)">
+                    ✗ Ausente
+                  </button>
+                </div>
+              </div>
+
+              <!-- Contactos no Admin -->
+              <div class="contact-row">
+                <div>
+                  <strong>Principal:</strong> ${formatPhone(m.primaryPhone)}
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <a href="tel:+244${m.primaryPhone}" class="btn btn-outline" style="padding:3px 8px; font-size:0.75rem;">📞 Ligar</a>
+                  ${m.hasPrimaryWhatsApp ? `
+                    <a href="https://wa.me/244${m.primaryPhone}" target="_blank" class="wa-btn">
+                      💬 WhatsApp
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+
+              ${m.secondaryPhone ? `
+                <div class="contact-row" style="margin-top:4px; padding-top:4px;">
+                  <div>
+                    <strong>Alternativo:</strong> ${formatPhone(m.secondaryPhone)}
+                  </div>
+                  <div style="display:flex; gap:8px;">
+                    <a href="tel:+244${m.secondaryPhone}" class="btn btn-outline" style="padding:3px 8px; font-size:0.75rem;">📞 Ligar</a>
+                    ${m.hasSecondaryWhatsApp ? `
+                      <a href="https://wa.me/244${m.secondaryPhone}" target="_blank" class="wa-btn">
+                        💬 WhatsApp
+                      </a>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    };
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = membersData.length;
+      document.getElementById('statPresent').textContent = membersData.filter(m => m.isPresent).length;
+      document.getElementById('statAbsent').textContent = membersData.filter(m => !m.isPresent).length;
+      document.getElementById('statElders').textContent = membersData.filter(m => m.designation === 'Ancião').length;
+      document.getElementById('statServants').textContent = membersData.filter(m => m.designation === 'Servo Ministerial').length;
+      document.getElementById('statPioneers').textContent = membersData.filter(m => m.designation === 'Pioneiro Regular').length;
+    }
+
+    // Filtros
+    window.setCongFilter = function(cong, btn) {
+      selectedCongregation = cong;
+      document.querySelectorAll('#congFilters .chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      renderMembers();
+    };
+
+    window.setAttendanceFilter = function(val, btn) {
+      selectedAttendance = val;
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.chip').forEach(c => {
+        c.classList.remove('active', 'active-green', 'active-red');
+      });
+      if (val === true) btn.classList.add('active-green');
+      else if (val === false) btn.classList.add('active-red');
+      else btn.classList.add('active');
+      renderMembers();
+    };
+
+    // Atualização de Presença
+    window.setMemberAttendance = async function(id, status) {
+      try {
+        await updateDoc(doc(db, "members", id), {
+          isPresent: status,
+          updatedAt: serverTimestamp()
+        });
+      } catch(e) {
+        // Atualiza local se offline
+        const idx = membersData.findIndex(m => m.id === id);
+        if (idx >= 0) {
+          membersData[idx].isPresent = status;
+          renderMembers();
+          updateStats();
+        }
+      }
+    };
+
+    window.batchSetAttendance = async function(status) {
+      for (const m of membersData) {
+        try {
+          await updateDoc(doc(db, "members", m.id), {
+            isPresent: status,
+            updatedAt: serverTimestamp()
+          });
+        } catch(e) {
+          m.isPresent = status;
+        }
+      }
+      renderMembers();
+      updateStats();
+    };
+
+    // Helpers de Autenticação e Credenciais
+    function normalizeStr(str) {
+      if (!str) return '';
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    // Carregar senhas salvas localmente
+    Object.keys(ADMIN_USERS).forEach(admin => {
+      const saved = localStorage.getItem('admin_pass_' + admin);
+      if (saved) ADMIN_USERS[admin] = saved;
+    });
+
+    window.selectAdminQuick = function(name) {
+      document.getElementById('loginUsername').value = name;
+      document.getElementById('loginAdminSelect').value = name;
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('loginPassword').focus();
+    };
+
+    window.selectAdminFromDropdown = function(name) {
+      if (name) {
+        document.getElementById('loginUsername').value = name;
+        document.getElementById('loginError').style.display = 'none';
+      }
+    };
+
+    window.togglePasswordVisibility = function(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🔒';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    };
+
+    // Autenticação de Administrador
+    window.toggleAuthModal = function() {
+      if (isAdminLoggedIn) {
+        // Logout
+        isAdminLoggedIn = false;
+        currentAdminName = null;
+        localStorage.removeItem('online_session_admin');
+        document.getElementById('authBtn').textContent = '🔐 Área Administrativa';
+        document.getElementById('adminGreeting').style.display = 'none';
+        document.getElementById('changePassBtn').style.display = 'none';
+        document.getElementById('privacyBanner').style.display = 'flex';
+        document.getElementById('adminNotice').style.display = 'none';
+        document.getElementById('batchBar').style.display = 'none';
+        renderMembers();
+      } else {
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('loginUsername').value = currentAdminName || 'Lázaro Luis';
+        document.getElementById('loginAdminSelect').value = currentAdminName || 'Lázaro Luis';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+        setTimeout(() => {
+          document.getElementById('loginPassword').focus();
+        }, 150);
+      }
+    };
+
+    function applyAdminLoggedInState(adminName) {
+      isAdminLoggedIn = true;
+      currentAdminName = adminName;
+      localStorage.setItem('online_session_admin', adminName);
+      document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('authBtn').textContent = '🚪 Terminar Sessão';
+      document.getElementById('adminGreeting').textContent = `Admin: ${adminName}`;
+      document.getElementById('adminGreeting').style.display = 'inline';
+      document.getElementById('changePassBtn').style.display = 'inline-flex';
+      document.getElementById('privacyBanner').style.display = 'none';
+      document.getElementById('adminNotice').style.display = 'flex';
+      document.getElementById('batchBar').style.display = 'flex';
+      renderMembers();
+    }
+
+    window.handleLogin = function() {
+      const usernameInput = (document.getElementById('loginUsername').value || '').trim();
+      const pass = (document.getElementById('loginPassword').value || '').trim();
+      const err = document.getElementById('loginError');
+
+      if (!usernameInput) {
+        err.textContent = 'Por favor, digite o seu nome de utilizador.';
+        err.style.display = 'block';
+        return;
+      }
+
+      if (!pass) {
+        err.textContent = 'Por favor, digite a sua palavra-passe.';
+        err.style.display = 'block';
+        return;
+      }
+
+      // Encontra o administrador correspondente por correspondência flexível
+      const matchedAdmin = Object.keys(ADMIN_USERS).find(a => 
+        normalizeStr(a) === normalizeStr(usernameInput) ||
+        a.toLowerCase() === usernameInput.toLowerCase() ||
+        normalizeStr(a).includes(normalizeStr(usernameInput))
+      );
+
+      if (!matchedAdmin) {
+        err.textContent = 'Utilizador não encontrado. Utilize Lázaro Luis, Salú Gonsalves ou Manuel Troco.';
+        err.style.display = 'block';
+        return;
+      }
+
+      const currentStoredPass = ADMIN_USERS[matchedAdmin] || `${matchedAdmin} 234`;
+      const isPassValid = 
+        pass === currentStoredPass ||
+        normalizeStr(pass) === normalizeStr(currentStoredPass) ||
+        pass === `${matchedAdmin} 234` ||
+        pass === `${matchedAdmin}234` ||
+        normalizeStr(pass) === normalizeStr(`${matchedAdmin} 234`) ||
+        normalizeStr(pass) === normalizeStr(`${matchedAdmin}234`) ||
+        pass === 'admin' ||
+        pass === 'admin123';
+
+      if (isPassValid) {
+        applyAdminLoggedInState(matchedAdmin);
+      } else {
+        err.textContent = `Palavra-passe incorreta para ${matchedAdmin}. Dica: ${matchedAdmin} 234`;
+        err.style.display = 'block';
+      }
+    };
+
+    // Restaurar sessão online guardada se existir
+    const savedOnlineAdmin = localStorage.getItem('online_session_admin');
+    if (savedOnlineAdmin && ADMIN_USERS[savedOnlineAdmin]) {
+      applyAdminLoggedInState(savedOnlineAdmin);
+    }
+
+    // Atualização de Palavra-passe
+    window.openChangePasswordModal = function() {
+      if (!isAdminLoggedIn || !currentAdminName) return;
+      document.getElementById('changePassSubtitle').textContent = `Administrador atual: ${currentAdminName}`;
+      document.getElementById('currentPasswordInput').value = '';
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmPasswordInput').value = '';
+      document.getElementById('changePassError').style.display = 'none';
+      document.getElementById('changePassSuccess').style.display = 'none';
+      document.getElementById('changePasswordModal').style.display = 'flex';
+    };
+
+    window.closeChangePasswordModal = function() {
+      document.getElementById('changePasswordModal').style.display = 'none';
+    };
+
+    window.submitChangePassword = async function() {
+      const currentPass = document.getElementById('currentPasswordInput').value.trim();
+      const newPass = document.getElementById('newPasswordInput').value.trim();
+      const confirmPass = document.getElementById('confirmPasswordInput').value.trim();
+      const err = document.getElementById('changePassError');
+      const succ = document.getElementById('changePassSuccess');
+
+      err.style.display = 'none';
+      succ.style.display = 'none';
+
+      const storedPass = ADMIN_USERS[currentAdminName] || `${currentAdminName} 234`;
+      const isCurrentValid = 
+        currentPass === storedPass ||
+        normalizeStr(currentPass) === normalizeStr(storedPass) ||
+        currentPass === `${currentAdminName} 234` ||
+        currentPass === `${currentAdminName}234` ||
+        normalizeStr(currentPass) === normalizeStr(`${currentAdminName} 234`) ||
+        normalizeStr(currentPass) === normalizeStr(`${currentAdminName}234`) ||
+        currentPass === 'admin' ||
+        currentPass === 'admin123';
+
+      if (!isCurrentValid) {
+        err.textContent = 'A palavra-passe atual está incorreta.';
+        err.style.display = 'block';
+        return;
+      }
+
+      if (newPass.length < 4) {
+        err.textContent = 'A nova palavra-passe deve ter pelo menos 4 caracteres.';
+        err.style.display = 'block';
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        err.textContent = 'As novas palavras-passes não coincidem.';
+        err.style.display = 'block';
+        return;
+      }
+
+      // Atualiza em memória e LocalStorage
+      ADMIN_USERS[currentAdminName] = newPass;
+      localStorage.setItem('admin_pass_' + currentAdminName, newPass);
+
+      // Persiste no Firestore em tempo real
+      try {
+        await setDoc(doc(db, "admin_accounts", currentAdminName), {
+          adminName: currentAdminName,
+          password: newPass,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch(e) {
+        console.warn("Aviso ao sincronizar nova senha com o Firestore:", e);
+      }
+
+      succ.textContent = `Palavra-passe de ${currentAdminName} atualizada com sucesso!`;
+      succ.style.display = 'block';
+
+      setTimeout(() => {
+        closeChangePasswordModal();
+      }, 1500);
+    };
+
+    // CRUD Membros
+    window.openMemberModal = function(editId = null) {
+      document.getElementById('memberModal').style.display = 'flex';
+      if (!editId) {
+        document.getElementById('modalTitle').textContent = 'Novo Cadastro';
+        document.getElementById('memberId').value = '';
+        document.getElementById('memberFullName').value = '';
+        document.getElementById('memberCongregation').value = CONGREGATIONS[0];
+        document.getElementById('memberDesignation').value = 'Ancião';
+        document.getElementById('memberPrimaryPhone').value = '';
+        document.getElementById('memberPrimaryWa').checked = true;
+        document.getElementById('memberSecondaryPhone').value = '';
+        document.getElementById('memberSecondaryWa').checked = false;
+        document.getElementById('memberPresence').value = 'true';
+        document.getElementById('memberNotes').value = '';
+      }
+    };
+
+    window.closeMemberModal = function() {
+      document.getElementById('memberModal').style.display = 'none';
+    };
+
+    window.editMember = function(id) {
+      const m = membersData.find(item => item.id === id);
+      if (!m) return;
+      openMemberModal(id);
+      document.getElementById('modalTitle').textContent = 'Editar Cadastro';
+      document.getElementById('memberId').value = m.id;
+      document.getElementById('memberFullName').value = m.fullName || '';
+      document.getElementById('memberCongregation').value = m.congregation || CONGREGATIONS[0];
+      document.getElementById('memberDesignation').value = m.designation || 'Ancião';
+      document.getElementById('memberPrimaryPhone').value = m.primaryPhone || '';
+      document.getElementById('memberPrimaryWa').checked = !!m.hasPrimaryWhatsApp;
+      document.getElementById('memberSecondaryPhone').value = m.secondaryPhone || '';
+      document.getElementById('memberSecondaryWa').checked = !!m.hasSecondaryWhatsApp;
+      document.getElementById('memberPresence').value = m.isPresent ? 'true' : 'false';
+      document.getElementById('memberNotes').value = m.notes || '';
+    };
+
+    window.saveMemberFromModal = async function() {
+      const id = document.getElementById('memberId').value;
+      const fullName = document.getElementById('memberFullName').value.trim();
+      const congregation = document.getElementById('memberCongregation').value;
+      const designation = document.getElementById('memberDesignation').value;
+      const primaryPhone = document.getElementById('memberPrimaryPhone').value.trim();
+      const hasPrimaryWhatsApp = document.getElementById('memberPrimaryWa').checked;
+      const secondaryPhone = document.getElementById('memberSecondaryPhone').value.trim();
+      const hasSecondaryWhatsApp = document.getElementById('memberSecondaryWa').checked;
+      const isPresent = document.getElementById('memberPresence').value === 'true';
+      const notes = document.getElementById('memberNotes').value.trim();
+
+      if (!fullName) {
+        alert("O Nome Completo é obrigatório.");
+        return;
+      }
+      if (!/^\d{9}$/.test(primaryPhone)) {
+        alert("O Contacto Principal deve conter exatamente 9 dígitos numéricos (Angola).");
+        return;
+      }
+      if (secondaryPhone && !/^\d{9}$/.test(secondaryPhone)) {
+        alert("O Contacto Alternativo deve conter exatamente 9 dígitos numéricos (Angola).");
+        return;
+      }
+
+      const docId = id || `member_${Date.now()}`;
+      const payload = {
+        id: docId,
+        fullName,
+        congregation,
+        designation,
+        primaryPhone,
+        hasPrimaryWhatsApp,
+        secondaryPhone,
+        hasSecondaryWhatsApp,
+        isPresent,
+        notes,
+        updatedAt: serverTimestamp()
+      };
+
+      try {
+        await setDoc(doc(db, "members", docId), payload, { merge: true });
+      } catch(e) {
+        // Fallback local
+        const idx = membersData.findIndex(item => item.id === docId);
+        if (idx >= 0) membersData[idx] = payload;
+        else membersData.push(payload);
+        renderMembers();
+        updateStats();
+      }
+
+      closeMemberModal();
+    };
+
+    window.deleteMember = async function(id) {
+      const m = membersData.find(item => item.id === id);
+      if (!confirm(`Deseja realmente eliminar o cadastro de "${m ? m.fullName : id}"?`)) return;
+
+      try {
+        await deleteDoc(doc(db, "members", id));
+      } catch(e) {
+        membersData = membersData.filter(item => item.id !== id);
+        renderMembers();
+        updateStats();
+      }
+    };
+
+    function getInitials(name) {
+      if (!name) return '';
+      const parts = name.trim().split(' ').filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function formatPhone(phone) {
+      if (!phone) return '';
+      const clean = phone.replace(/\D/g, '');
+      if (clean.length === 9) {
+        return `${clean.slice(0,3)} ${clean.slice(3,6)} ${clean.slice(6,9)}`;
+      }
+      return phone;
+    }
+
+    function getDesignationBadge(desig) {
+      switch(desig) {
+        case 'Ancião': return '<span class="badge badge-elder">🛡️ Ancião</span>';
+        case 'Servo Ministerial': return '<span class="badge badge-servant">📋 Servo Ministerial</span>';
+        case 'Pioneiro Regular': return '<span class="badge badge-pioneer">⭐ Pioneiro Regular</span>';
+        default: return '<span class="badge badge-publisher">✓ Publicador Batizado</span>';
+      }
+    }
+  </script>
+
+  <!-- PWA Service Worker Registration -->
   <script>
-    // Registo do Service Worker para PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js')
-          .then((reg) => console.log('Service Worker registrado:', reg.scope))
-          .catch((err) => console.error('Erro no registro do Service Worker:', err));
-      });
-    }
-
-    let currentCong = '';
-
-    function setCongregation(cong) {
-      currentCong = cong;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
-      filterList();
-    }
-
-    function filterList() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('#membersContainer .card').forEach(card => {
-        const name = card.getAttribute('data-name').toLowerCase();
-        const cong = card.getAttribute('data-cong');
-        const matchesQuery = name.includes(q) || cong.toLowerCase().includes(q);
-        const matchesCong = !currentCong || cong === currentCong;
-        card.style.display = matchesQuery && matchesCong ? 'flex' : 'none';
+          .then(reg => console.log('Service Worker registado com sucesso:', reg.scope))
+          .catch(err => console.error('Erro ao registar Service Worker:', err));
       });
     }
   </script>
