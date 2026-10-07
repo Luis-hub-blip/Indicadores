@@ -447,7 +447,7 @@
         🔑 Alterar Palavra-passe
       </button>
       <button id="authBtn" class="btn btn-admin" onclick="toggleAuthModal()">
-        Área Administrativa
+        🔐 Iniciar Sessão Online
       </button>
     </div>
   </header>
@@ -525,44 +525,49 @@
   </main>
 
   <!-- Login Modal -->
-  <div id="loginModal" class="modal-backdrop" style="display:none;">
-    <div class="modal-content">
-      <h2 style="margin-bottom:6px; color:var(--primary);">Área Administrativa</h2>
-      <p style="font-size:0.85rem; color:#64748B; margin-bottom:16px;">Inicie a sessão com o seu nome de utilizador e a palavra-passe.</p>
+  <div id="loginModal" class="modal-backdrop" style="display:none;" onclick="if(event.target === this) toggleAuthModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h2 style="color:var(--primary); font-size:1.3rem;">Iniciar Sessão Online</h2>
+        <span style="background:#E0E7FF; color:var(--primary-dark); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:700;">Área Web & PWA</span>
+      </div>
+      <p style="font-size:0.85rem; color:#64748B; margin-bottom:16px;">Inicie a sessão na página online com o seu nome de utilizador e a palavra-passe para aceder à administração.</p>
       
-      <div class="form-group">
-        <label>Nome de Utilizador</label>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="loginUsername" class="form-control" placeholder="Digite o nome (ex: Lázaro Luis, Salú Gonsalves, Manuel Troco)">
-          <select id="loginAdminSelect" class="form-control" style="width:auto; max-width:130px;" onchange="selectAdminFromDropdown(this.value)">
-            <option value="">Lista</option>
-            <option value="Lázaro Luis">Lázaro Luis</option>
-            <option value="Salú Gonsalves">Salú Gonsalves</option>
-            <option value="Manuel Troco">Manuel Troco</option>
-          </select>
+      <form onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group">
+          <label>Nome de Utilizador / Administrador *</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="loginUsername" class="form-control" placeholder="Digite o nome (ex: Lázaro Luis, Salú Gonsalves, Manuel Troco)" autocomplete="username" required>
+            <select id="loginAdminSelect" class="form-control" style="width:auto; max-width:130px;" onchange="selectAdminFromDropdown(this.value)">
+              <option value="">Lista</option>
+              <option value="Lázaro Luis">Lázaro Luis</option>
+              <option value="Salú Gonsalves">Salú Gonsalves</option>
+              <option value="Manuel Troco">Manuel Troco</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Lázaro Luis')">Lázaro Luis</button>
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Salú Gonsalves')">Salú Gonsalves</button>
+            <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Manuel Troco')">Manuel Troco</button>
+          </div>
         </div>
-        <div style="display:flex; gap:6px; margin-top:8px;">
-          <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Lázaro Luis')">Lázaro Luis</button>
-          <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Salú Gonsalves')">Salú Gonsalves</button>
-          <button type="button" class="chip" style="font-size:0.75rem; padding:3px 8px;" onclick="selectAdminQuick('Manuel Troco')">Manuel Troco</button>
+
+        <div class="form-group">
+          <label>Palavra-passe *</label>
+          <div style="position:relative;">
+            <input type="password" id="loginPassword" class="form-control" placeholder="Dica: [Nome do administrador] 234" style="padding-right:40px;" autocomplete="current-password" required>
+            <button type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.1rem;" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+          </div>
+          <small style="color:#64748B; font-size:0.75rem; display:block; margin-top:4px;">Dica inicial: [Nome do administrador] 234 (ex: Lázaro Luis 234)</small>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Palavra-passe</label>
-        <div style="position:relative;">
-          <input type="password" id="loginPassword" class="form-control" placeholder="Dica: [Nome do administrador] 234" style="padding-right:40px;">
-          <button type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.1rem;" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+        <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-bottom:12px; display:none; background:#FEE2E2; padding:8px 12px; border-radius:8px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-outline" onclick="toggleAuthModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="loginSubmitBtn">Entrar na Sessão</button>
         </div>
-        <small style="color:#64748B; font-size:0.75rem; display:block; margin-top:4px;">Dica inicial: [Nome do administrador] 234 (ex: Lázaro Luis 234)</small>
-      </div>
-
-      <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-bottom:12px; display:none;"></div>
-
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-        <button class="btn btn-outline" onclick="toggleAuthModal()">Cancelar</button>
-        <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -726,7 +731,7 @@
       memberCongSelect.appendChild(opt);
     });
 
-    // Escuta em Tempo Real do Firestore
+    // Escuta em Tempo Real do Firestore (Membros)
     const membersColRef = collection(db, "members");
     onSnapshot(membersColRef, (snapshot) => {
       membersData = snapshot.docs.map(doc => ({
@@ -746,6 +751,24 @@
       // Se não autenticado via regras estritas de cloud, carrega dados locais
       loadLocalFallback();
     });
+
+    // Escuta em Tempo Real de Contas Administrativas no Firestore
+    try {
+      const adminColRef = collection(db, "admin_accounts");
+      onSnapshot(adminColRef, (snapshot) => {
+        snapshot.docs.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data && data.adminName && data.password) {
+            ADMIN_USERS[data.adminName] = data.password;
+            localStorage.setItem('admin_pass_' + data.adminName, data.password);
+          }
+        });
+      }, (err) => {
+        console.warn("Aviso admin_accounts snapshot:", err.message);
+      });
+    } catch(e) {
+      console.warn("Aviso ao subscrever admin_accounts:", e);
+    }
 
     // Função de Fallback com dados iniciais
     async function seedInitialData() {
@@ -995,7 +1018,8 @@
         // Logout
         isAdminLoggedIn = false;
         currentAdminName = null;
-        document.getElementById('authBtn').textContent = 'Área Administrativa';
+        localStorage.removeItem('online_session_admin');
+        document.getElementById('authBtn').textContent = '🔐 Iniciar Sessão Online';
         document.getElementById('adminGreeting').style.display = 'none';
         document.getElementById('changePassBtn').style.display = 'none';
         document.getElementById('privacyBanner').style.display = 'flex';
@@ -1004,12 +1028,30 @@
         renderMembers();
       } else {
         document.getElementById('loginModal').style.display = 'flex';
-        document.getElementById('loginUsername').value = 'Lázaro Luis';
-        document.getElementById('loginAdminSelect').value = 'Lázaro Luis';
+        document.getElementById('loginUsername').value = currentAdminName || 'Lázaro Luis';
+        document.getElementById('loginAdminSelect').value = currentAdminName || 'Lázaro Luis';
         document.getElementById('loginPassword').value = '';
         document.getElementById('loginError').style.display = 'none';
+        setTimeout(() => {
+          document.getElementById('loginPassword').focus();
+        }, 150);
       }
     };
+
+    function applyAdminLoggedInState(adminName) {
+      isAdminLoggedIn = true;
+      currentAdminName = adminName;
+      localStorage.setItem('online_session_admin', adminName);
+      document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('authBtn').textContent = '🚪 Terminar Sessão';
+      document.getElementById('adminGreeting').textContent = `Admin: ${adminName}`;
+      document.getElementById('adminGreeting').style.display = 'inline';
+      document.getElementById('changePassBtn').style.display = 'inline-flex';
+      document.getElementById('privacyBanner').style.display = 'none';
+      document.getElementById('adminNotice').style.display = 'flex';
+      document.getElementById('batchBar').style.display = 'flex';
+      renderMembers();
+    }
 
     window.handleLogin = function() {
       const usernameInput = (document.getElementById('loginUsername').value || '').trim();
@@ -1053,22 +1095,18 @@
         pass === 'admin123';
 
       if (isPassValid) {
-        isAdminLoggedIn = true;
-        currentAdminName = matchedAdmin;
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('authBtn').textContent = 'Terminar Sessão';
-        document.getElementById('adminGreeting').textContent = `Admin: ${matchedAdmin}`;
-        document.getElementById('adminGreeting').style.display = 'inline';
-        document.getElementById('changePassBtn').style.display = 'inline-flex';
-        document.getElementById('privacyBanner').style.display = 'none';
-        document.getElementById('adminNotice').style.display = 'flex';
-        document.getElementById('batchBar').style.display = 'flex';
-        renderMembers();
+        applyAdminLoggedInState(matchedAdmin);
       } else {
         err.textContent = `Palavra-passe incorreta para ${matchedAdmin}. Dica: ${matchedAdmin} 234`;
         err.style.display = 'block';
       }
     };
+
+    // Restaurar sessão online guardada se existir
+    const savedOnlineAdmin = localStorage.getItem('online_session_admin');
+    if (savedOnlineAdmin && ADMIN_USERS[savedOnlineAdmin]) {
+      applyAdminLoggedInState(savedOnlineAdmin);
+    }
 
     // Atualização de Palavra-passe
     window.openChangePasswordModal = function() {
